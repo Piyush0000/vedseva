@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ved Seva - Appointments</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "georgia";
+      }
+
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-light: #f0f9ff;
+        --card-bg: #ffffff;
+        --text-primary: #1e3a8a;
+        --text-secondary: #334155;
+        --accent: #3b82f6;
+        --nav-bg: #e0f2fe;
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+      }
+
+      nav {
+        background-color: var(--nav-bg);
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .nav-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo-pulse {
+        width: 10px;
+        height: 10px;
+        background-color: var(--accent);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .page-title {
+        text-align: center;
+        color: var(--primary);
+        margin: 2rem 0;
+        font-size: 2rem;
+      }
+
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+        border: 1px solid rgba(37, 99, 235, 0.1);
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.1),
+          0 10px 10px -5px rgba(37, 99, 235, 0.04);
+        background-color: white;
+        border-color: var(--primary);
+      }
+
+      .card-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .card h3 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .card p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .card-button {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: auto;
+      }
+
+      .card-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .cards-container {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <h1 class="nav-title">
+          <span class="logo-pulse"></span>
+          वैदSeva
+        </h1>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h2 class="page-title">Patient Services</h2>
+
+      <div class="cards-container">
+        <div class="card" onclick="location.href='book-appointment.html'">
+          <div class="card-icon">📅</div>
+          <h3>BOOK AN APPOINTMENT</h3>
+          <p>Schedule a new consultation with our experienced doctors</p>
+          <a href="appointment.html">
+            <button class="card-button">Book Now</button>
+          </a>
+        </div>
+
+        <div class="card" onclick="location.href='view-appointment.html'">
+          <div class="card-icon">🗓️</div>
+          <h3>ALREADY HAVE AN APPOINTMENT</h3>
+          <p>View or manage your existing appointments</p>
+          <a href="video.html">
+            <button class="card-button">View Details</button>
+          </a>
+        </div>
+
+        <div class="card" onclick="location.href='prescription.html'">
+          <div class="card-icon">📋</div>
+          <h3>ACCESS TO PRESCRIPTION/DETAILS</h3>
+          <p>Access your medical records and prescriptions</p>
+          <a href="prescription.html">
+            <button class="card-button">View Details</button>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Add hover effect to cards
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          card.style.transform = "translateY(-10px)";
+        });
+
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "translateY(0)";
+        });
+      });
+    </script>
+  </body>
+</html>

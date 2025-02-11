@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ved Seva - Login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "georgia";
+      }
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-light: #f0f9ff;
+        --card-bg: #ffffff;
+        --text-primary: #1e3a8a;
+        --text-secondary: #334155;
+        --accent: #3b82f6;
+        --nav-bg: #e0f2fe;
+      }
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+        transition: background-color 0.3s ease;
+      }
+      nav {
+        background-color: var(--nav-bg);
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .nav-title {
+        position: relative;
+        display: inline-block;
+        transition: transform 0.3s ease;
+      }
+      .nav-title:hover {
+        transform: scale(1.05);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .login-container {
+        max-width: 400px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: var(--card-bg);
+        border-radius: 1rem;
+        box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.1);
+        transform: translateY(0);
+        transition: all 0.3s ease;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+      }
+      .login-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -4px rgba(37, 99, 235, 0.15);
+      }
+      .login-title {
+        text-align: center;
+        color: var(--primary);
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        position: relative;
+      }
+      .login-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background-color: var(--primary);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+      .login-container:hover .login-title::after {
+        width: 50%;
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        outline: none;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+      .form-group input::placeholder {
+        color: #94a3b8;
+        opacity: 0.7;
+      }
+      .form-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+      .form-group input:valid {
+        border-color: #10b981;
+      }
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.125rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+      .btn:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+      .btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-5px);
+        }
+        40%,
+        80% {
+          transform: translateX(5px);
+        }
+      }
+      .shake {
+        animation: shake 0.5s ease;
+      }
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--text-secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <h1 class="nav-title">वैदSeva</h1>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="login-container">
+        <h2 class="login-title">Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="aadhar">Username</label>
+            <input
+              type="text"
+              id="aadhar"
+              pattern="[0-9]{12}"
+              maxlength="12"
+              placeholder="Enter Aadhar Number"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="phone">Password</label>
+            <input
+              type="password"
+              id="phone"
+              pattern="[0-9]{10}"
+              maxlength="10"
+              placeholder="Enter Phone Number"
+              required
+            />
+          </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDDnB7VRWRm51llf1fqCYiZjEYymrBnXq4",
+        authDomain: "hackathon-5dac6.firebaseapp.com",
+        projectId: "hackathon-5dac6",
+        storageBucket: "hackathon-5dac6.appspot.com",
+        messagingSenderId: "773428027818",
+        appId: "1:773428027818:web:47223bb5bc2d814891cbd3",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const aadhar = document.getElementById("aadhar").value.trim();
+          const phone = document.getElementById("phone").value.trim();
+
+          if (!aadhar || !phone) {
+            const form = document.getElementById("loginForm");
+            form.classList.add("shake");
+            setTimeout(() => form.classList.remove("shake"), 500);
+            alert("Please enter Username and Password");
+            return;
+          }
+
+          try {
+            const usersRef = collection(db, "users");
+            const q = query(
+              usersRef,
+              where("aadhar", "==", aadhar),
+              where("phone", "==", phone)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+              const btn = document.querySelector(".btn");
+              btn.style.backgroundColor = "#10b981";
+              btn.textContent = "Success!";
+              setTimeout(() => {
+                window.location.href = "cards.html";
+              }, 1000);
+            } else {
+              const form = document.getElementById("loginForm");
+              form.classList.add("shake");
+              setTimeout(() => form.classList.remove("shake"), 500);
+              alert("Invalid Username or Password");
+            }
+          } catch (error) {
+            console.error("Login Error:", error);
+            alert("Login failed: " + error.message);
+          }
+        });
+    </script>
+  </body>
+</html>

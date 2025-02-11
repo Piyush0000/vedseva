@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Availability</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+      }
+
+      body {
+        background-color: #f0f4ff;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        color: #1a1a1a;
+        font-size: 24px;
+      }
+
+      .time {
+        color: #666;
+      }
+
+      .filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .filter-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        background-color: white;
+        color: #3454d1;
+        border: 1px solid #e0e0e0;
+      }
+
+      .filter-btn.active {
+        background-color: #3454d1;
+        color: white;
+      }
+
+      .doctors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .doctor-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .doctor-header {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        background-color: #f0f0f0;
+        border-radius: 25px;
+      }
+
+      .doctor-info h2 {
+        color: #3454d1;
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+
+      .doctor-info p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 14px;
+        margin-top: 8px;
+      }
+
+      .status.available {
+        background-color: #e6f4ea;
+        color: #137333;
+      }
+
+      .status.consultation {
+        background-color: #fce8e6;
+        color: #c5221f;
+      }
+
+      .status.break {
+        background-color: #fff8e1;
+        color: #f9a825;
+      }
+
+      .status::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .status.available::before {
+        background-color: #137333;
+      }
+
+      .status.consultation::before {
+        background-color: #c5221f;
+      }
+
+      .status.break::before {
+        background-color: #f9a825;
+      }
+
+      .schedule-info {
+        margin: 15px 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .schedule-info p {
+        margin-bottom: 8px;
+      }
+
+      .time-slots {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .time-slot {
+        padding: 8px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .time-slot.available {
+        background-color: #e8f0fe;
+        color: #3454d1;
+        cursor: pointer;
+      }
+
+      .time-slot.selected {
+        background-color: #d0deff;
+        border: 2px solid #3454d1;
+      }
+
+      .book-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #3454d1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.2s;
+      }
+
+      .book-btn:hover {
+        background-color: #2a43a7;
+      }
+
+      .book-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #e6f4ea;
+        color: #137333;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: none;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Doctor Availability</h1>
+      <span class="time">12:03 AM</span>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active">All Doctors</button>
+      <button class="filter-btn">Available Now</button>
+      <button class="filter-btn">General Physicians</button>
+      <button class="filter-btn">Specialists</button>
+    </div>
+
+    <div class="doctors-grid">
+      <div class="doctor-card">
+        <div class="doctor-header">
+          <div class="avatar"></div>
+          <div class="doctor-info">
+            <h2>Dr. Mohit Chopra</h2>
+            <p>General Physician</p>
+            <div class="status available">Available Now</div>
+          </div>
+        </div>
+        <div class="schedule-info">
+          <p>Today's Schedule: 9:00 AM - 5:00 PM</p>
+          <p>Next Break: 1:00 PM - 2:00 PM</p>
+        </div>
+        <div class="time-slots">
+          <div class="time-slot available">10:30</div>
+          <div class="time-slot available">11:00</div>
+          <div class="time-slot available">11:30</div>
+          <div class="time-slot available">12:00</div>
+          <div class="time-slot available">12:30</div>
+          <div class="time-slot available">2:00</div>
+        </div>
+        <button class="book-btn" disabled>Book Appointment</button>
+      </div>
+
+      <div class="doctor-card">
+        <div class="doctor-header">
+          <div class="avatar"></div>
+          <div class="doctor-info">
+            <h2>Dr. Michael Chen</h2>
+            <p>Cardiologist</p>
+            <div class="status consultation">In Consultation</div>
+          </div>
+        </div>
+        <div class="schedule-info">
+          <p>Today's Schedule: 10:00 AM - 6:00 PM</p>
+          <p>Next Available: 2:30 PM</p>
+        </div>
+        <div class="time-slots">
+          <div class="time-slot available">2:30</div>
+          <div class="time-slot available">3:00</div>
+          <div class="time-slot available">3:30</div>
+          <div class="time-slot available">4:00</div>
+          <div class="time-slot available">4:30</div>
+          <div class="time-slot available">5:00</div>
+        </div>
+        <button class="book-btn" disabled>Book Appointment</button>
+      </div>
+
+      <div class="doctor-card">
+        <div class="doctor-header">
+          <div class="avatar"></div>
+          <div class="doctor-info">
+            <h2>Dr. Priya Patel</h2>
+            <p>Pediatrician</p>
+            <div class="status break">On Break</div>
+          </div>
+        </div>
+        <div class="schedule-info">
+          <p>Today's Schedule: 9:00 AM - 4:00 PM</p>
+          <p>Returns at: 2:00 PM</p>
+        </div>
+        <div class="time-slots">
+          <div class="time-slot available">2:00</div>
+          <div class="time-slot available">2:30</div>
+          <div class="time-slot available">3:00</div>
+          <div class="time-slot available">3:30</div>
+          <div class="time-slot available">4:00</div>
+          <div class="time-slot available">4:30</div>
+        </div>
+        <button class="book-btn" disabled>Book Appointment</button>
+      </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+      Appointment booked successfully!
+    </div>
+
+    <script>
+      // Initialize variables to track selected doctor and time slot
+      let selectedDoctor = null;
+      let selectedTime = null;
+
+      // Add click handlers for filter buttons
+      const filterButtons = document.querySelectorAll(".filter-btn");
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          filterButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+        });
+      });
+
+      // Add click handlers for time slots
+      document.querySelectorAll(".time-slot").forEach((slot) => {
+        slot.addEventListener("click", () => {
+          if (!slot.classList.contains("available")) return;
+
+          // Remove selected class from all time slots in the same doctor card
+          const doctorCard = slot.closest(".doctor-card");
+          doctorCard.querySelectorAll(".time-slot").forEach((s) => {
+            s.classList.remove("selected");
+          });
+
+          // Add selected class to clicked time slot
+          slot.classList.add("selected");
+
+          // Store selected doctor and time
+          selectedDoctor =
+            doctorCard.querySelector(".doctor-info h2").textContent;
+          selectedTime = slot.textContent;
+
+          // Enable the book button for this doctor card
+          doctorCard.querySelector(".book-btn").disabled = false;
+        });
+      });
+
+      // Add click handlers for book buttons
+      document.querySelectorAll(".book-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (selectedDoctor && selectedTime) {
+            // Create appointment object
+            const appointment = {
+              doctorName: selectedDoctor,
+              time: selectedTime,
+              date: new Date().toLocaleDateString(),
+              status: "Upcoming",
+            };
+
+            // Get existing appointments or initialize empty array
+            let appointments =
+              JSON.parse(localStorage.getItem("appointments")) || [];
+
+            // Add new appointment
+            appointments.push(appointment);
+
+            // Save to localStorage
+            localStorage.setItem("appointments", JSON.stringify(appointments));
+
+            // Show success message
+            const successMessage = document.getElementById("successMessage");
+            successMessage.style.display = "block";
+
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+              successMessage.style.display = "none";
+            }, 3000);
+
+            // Disable the selected time slot
+            const selectedSlot = document.querySelector(".time-slot.selected");
+            if (selectedSlot) {
+              selectedSlot.classList.remove("available", "selected");
+              selectedSlot.style.backgroundColor = "#cccccc";
+            }
+
+            // Reset selection
+            selectedDoctor = null;
+            selectedTime = null;
+            button.disabled = true;
+          }
+        });
+      });
+
+      // Update current time
+      function updateTime() {
+        const timeElement = document.querySelector(".time");
+        const now = new Date();
+        timeElement.textContent = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      // Update time every minute
+      updateTime();
+      setInterval(updateTime, 60000);
+    </script>
+  </body>
+</html>
