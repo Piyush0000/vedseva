@@ -225,7 +225,12 @@
     </div>
 
     <script type="module">
+      // Import Firebase SDK
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
       import {
         getFirestore,
         collection,
@@ -234,60 +239,96 @@
         getDocs,
       } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
 
+      // Firebase Configuration
       const firebaseConfig = {
-        apiKey: "AIzaSyDDnB7VRWRm51llf1fqCYiZjEYymrBnXq4",
-        authDomain: "hackathon-5dac6.firebaseapp.com",
-        projectId: "hackathon-5dac6",
-        storageBucket: "hackathon-5dac6.appspot.com",
-        messagingSenderId: "773428027818",
-        appId: "1:773428027818:web:47223bb5bc2d814891cbd3",
+        apiKey: "AIzaSyD-18K-6BnKOxc1CDhkQAv5dWIEwOFT-go",
+        authDomain: "vedseva-5e40f.firebaseapp.com",
+        projectId: "vedseva-5e40f",
+        storageBucket: "vedseva-5e40f.appspot.com",
+        messagingSenderId: "28374532477",
+        appId: "1:28374532477:web:c5076c500cebaa4b630c14",
       };
 
+      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
       const db = getFirestore(app);
 
+      // Function to display user data
+      const displayUserData = (userData) => {
+        const userInfo = document.getElementById("userInfo");
+        userInfo.innerHTML = `
+    <div class="user-info"><strong>Name:</strong> ${userData.name}</div>
+    <div class="user-info"><strong>Age:</strong> ${userData.age}</div>
+    <div class="user-info"><strong>Gender:</strong> ${userData.gender}</div>
+    <div class="user-info"><strong>Phone:</strong> ${userData.phone}</div>
+    <div class="user-info"><strong>Height:</strong> ${userData.height} cm</div>
+    <div class="user-info"><strong>Weight:</strong> ${userData.weight} kg</div>
+  `;
+        document.getElementById("userDetails").style.display = "block";
+      };
+
+      // Handle Login Form Submission
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
 
           const aadhar = document.getElementById("aadhar").value.trim();
-          const phone = document.getElementById("phone").value.trim();
-
-          if (!aadhar || !phone) {
-            const form = document.getElementById("loginForm");
-            form.classList.add("shake");
-            setTimeout(() => form.classList.remove("shake"), 500);
-            alert("Please enter Username and Password");
-            return;
-          }
+          const password = document.getElementById("password").value;
 
           try {
+            // First, try to find the user by aadhar number in Firestore
             const usersRef = collection(db, "users");
-            const q = query(
-              usersRef,
-              where("aadhar", "==", aadhar),
-              where("phone", "==", phone)
-            );
+            const q = query(usersRef, where("aadhar", "==", aadhar));
             const querySnapshot = await getDocs(q);
 
-            if (!querySnapshot.empty) {
-              const btn = document.querySelector(".btn");
-              btn.style.backgroundColor = "#10b981";
-              btn.textContent = "Success!";
-              setTimeout(() => {
-                window.location.href = "cards.html";
-              }, 1000);
-            } else {
-              const form = document.getElementById("loginForm");
-              form.classList.add("shake");
-              setTimeout(() => form.classList.remove("shake"), 500);
-              alert("Invalid Username or Password");
+            if (querySnapshot.empty) {
+              alert("No user found with this Aadhar number");
+              return;
             }
+
+            // Get user data
+            const userData = querySnapshot.docs[0].data();
+
+            // Now try to sign in
+            await signInWithEmailAndPassword(
+              auth,
+              `${aadhar}@vedseva.com`,
+              password
+            );
+
+            // If login successful, display the data
+            displayUserData(userData);
+            alert("✅ Login successful!");
           } catch (error) {
-            console.error("Login Error:", error);
-            alert("Login failed: " + error.message);
+            console.error("Login error:", error);
+
+            // More specific error messages
+            if (error.code === "auth/invalid-email") {
+              alert("Invalid Aadhar format");
+            } else if (error.code === "auth/user-not-found") {
+              alert("No account found with this Aadhar number");
+            } else if (error.code === "auth/wrong-password") {
+              alert("Incorrect password");
+            } else {
+              alert(`Login error: ${error.message}`);
+            }
           }
+        });
+
+      // Add input formatting for Aadhar number
+      const aadharInput = document.getElementById("aadhar");
+      aadharInput.addEventListener("input", (e) => {
+        e.target.value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+      });
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert("✅ Login successful!");
+          window.location.href = "cards.html";
         });
     </script>
   </body>

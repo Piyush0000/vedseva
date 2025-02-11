@@ -30,7 +30,6 @@
         background-color: var(--bg-light);
         color: var(--text-primary);
       }
-
       nav {
         background-color: var(--nav-bg);
         padding: 1rem;
@@ -117,6 +116,7 @@
         text-align: center;
         color: var(--text-secondary);
         margin-top: 1rem;
+        display: none; /* Initially hidden */
       }
 
       .facility-card {
@@ -187,7 +187,7 @@
               </div>
             </div>
             <div class="facility-card">
-              <div class="facility-name">Blood Sugar Test</div>
+              <div class="facility-name">WIDAL Test (for Typhoid)</div>
               <div class="facility-details">Priority: Medium</div>
               <div class="facility-details">
                 Fasting Required: Yes (8 hours)
@@ -205,12 +205,9 @@
           <div class="card-content">
             <div class="facility-card">
               <div class="facility-name">Prescribed Medications</div>
-              <div class="facility-details">
-                1. Paracetamol - 500mg (3 times/day)
-              </div>
-              <div class="facility-details">
-                2. Vitamin D3 - 60,000 IU (weekly)
-              </div>
+              <div class="facility-details">1. Dolo-650 (3x/day, 3 days)</div>
+              <div class="facility-details">2.Montek LC (1x/night, 3 days)</div>
+              <div class="facility-details">3. PAN40 (1x/day, 3 days)</div>
             </div>
 
             <div class="facility-card">
@@ -220,7 +217,7 @@
                 Tests Available: Blood Tests, X-Ray
               </div>
               <div class="facility-details">Timings: 9 AM - 6 PM</div>
-              <button class="book-facility">Book Appointment</button>
+              <button class="book-facility">Get Directions</button>
             </div>
 
             <div class="facility-card">
@@ -242,6 +239,8 @@
       document
         .querySelector(".register-button")
         .addEventListener("click", function () {
+          document.querySelector(".registration-message").style.display =
+            "block";
           this.textContent = "Registered!";
           this.style.backgroundColor = "#059669"; // Success green color
         });
