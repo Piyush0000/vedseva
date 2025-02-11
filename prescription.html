@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prescription</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #e8f0fe;
+        margin: 0;
+        position: relative;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+      }
+      .header {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .section {
+        margin-top: 15px;
+      }
+      .section h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .info {
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      .box {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+      .button-container {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        width: 900px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .print {
+        background-color: #0044cc;
+        color: white;
+      }
+      .more-info {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+      }
+      .stamp {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <button class="button print" onclick="window.print()">PRINT</button>
+      <a href="test_lab.html"
+        ><button class="button more-info" id="extra">More info</button></a
+      >
+    </div>
+    <div class="container">
+      <div class="header">
+        Dr. MOHIT CHOPRA, MD<br />17/10 Old Rajendra Nagar-110060<br />Phone no:
+        +91-XXXXXXXXXX
+      </div>
+
+      <div class="section">
+        <h3>Patient Information</h3>
+        <div class="box">
+          <div class="info">
+            Name: Akanksha Batra | Age: 25 | Height: 150 cm
+          </div>
+          <div class="info">
+            Blood Group: O+ | Gender: Female | Weight: 65 kg
+          </div>
+          <div class="info">Date: 10/2/2025</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Symptoms</h3>
+        <div class="box">
+          The patient presented with fever, cough, cold, and stomach ache.
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Diagnosis</h3>
+        <div class="box">Viral and stomach infection.</div>
+      </div>
+
+      <div class="section">
+        <h3>Test Required</h3>
+        <div class="box">
+          <ul>
+            <li>WIDAL Test (Test for typhoid)</li>
+            <li>CBC</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Medicine Required</h3>
+        <div class="box">
+          <ul>
+            <li>Dolo-650 (3x/day, 3 days)</li>
+            <li>Montek LC (1x/night, 3 days)</li>
+            <li>PAN40 (1x/day, 3 days)</li>
+          </ul>
+        </div>
+      </div>
+
+      <img src="logo.jpeg" alt="Doctor Stamp" class="stamp" />
+    </div>
+  </body>
+</html>

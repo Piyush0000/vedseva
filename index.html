@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ved Seva</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "georgia";
+      }
+
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-light: #f0f9ff;
+        --card-bg: #ffffff;
+        --text-primary: #1e3a8a;
+        --text-secondary: #334155;
+        --accent: #3b82f6;
+        --emergency: #dc2626;
+        --nav-bg: #e0f2fe;
+        --card-hover: #f8fafc;
+        --feature-hover: #e0f2fe;
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        background-color: var(--accent);
+        border-radius: 50%;
+        opacity: 0.1;
+        pointer-events: none;
+      }
+
+      nav {
+        background-color: var(--nav-bg);
+        padding: 1rem;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      nav:hover {
+        box-shadow: 0 4px 12px -1px rgba(37, 99, 235, 0.15);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .nav-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo-pulse {
+        width: 10px;
+        height: 10px;
+        background-color: var(--accent);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      main {
+        position: relative;
+        z-index: 10;
+        padding: 2rem 1rem;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 3rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s forwards;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero-title {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .hero-title:hover {
+        text-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+        transform: scale(1.02);
+        color: var(--primary-dark);
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 42rem;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.15);
+        background-color: var(--card-hover);
+      }
+
+      .card p {
+        color: var(--text-secondary);
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.75rem 2.5rem;
+        font-size: 1.125rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn:hover::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      .btn-blue {
+        background-color: var(--primary);
+      }
+
+      .btn-blue:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .btn-emergency {
+        background-color: var(--emergency);
+        padding: 1rem 3.5rem;
+        font-size: 1.25rem;
+        animation: emergencyPulse 2s infinite;
+      }
+
+      .status-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--nav-bg);
+        color: var(--text-primary);
+        padding: 0.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+
+      .status-bar.active {
+        transform: translateY(0);
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 3rem auto;
+        max-width: 42rem;
+      }
+
+      .feature-item {
+        background-color: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+      }
+
+      .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        background-color: var(--feature-hover);
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--accent);
+      }
+
+      .feature-item h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-item p {
+        color: var(--text-secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Rest of the HTML remains exactly the same as in your original code -->
+    <nav>
+      <div class="container">
+        <h1 class="nav-title">
+          <span class="logo-pulse"></span>
+          वैदSeva
+        </h1>
+      </div>
+    </nav>
+
+    <main>
+      <div class="container">
+        <div class="hero">
+          <h2 class="hero-title">वैदSeva</h2>
+          <div class="card">
+            <p>
+              वैदSeva is a healthcare initiative designed to make doctor
+              consultations more accessible and affordable. We operate through
+              kiosk-based stations placed near chemists in villages. Each
+              station features a digital screen where an assistant helps
+              patients book doctor appointments with a one-time minimal payment,
+              ensuring low consultation fees. By integrating technology with
+              human assistance, वैदSeva bridges the healthcare gap, providing
+              rural communities with quality medical consultations and easy
+              access to medicines.
+            </p>
+            <p>
+              Your health is our priority - access quality healthcare without
+              traveling far.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-icon">👨‍⚕️</div>
+            <h3>Expert Doctors</h3>
+            <p>Connect with qualified medical professionals</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🏥</div>
+            <h3>24/7 Support</h3>
+            <p>Round-the-clock medical assistance</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📱</div>
+            <h3>Easy Access</h3>
+            <p>Simple and user-friendly platform</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">💰</div>
+            <h3>Minimal consultation fees</h3>
+            <p>Expert guidance at low cost</p>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <div class="button-group">
+            <a href="main_login.html">
+              <button
+                class="btn btn-blue"
+                onclick="showStatus('Logging in...')"
+              >
+                Login
+              </button>
+            </a>
+            <a href="sign_up.html">
+              <button
+                class="btn btn-blue"
+                onclick="showStatus('Creating account...')"
+              >
+                Sign Up
+              </button>
+            </a>
+          </div>
+          <a href="video.html">
+            <button class="btn btn-emergency" onclick="handleEmergency()">
+              Emergency
+            </button>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <div class="status-bar" id="statusBar">Processing...</div>
+
+    <!-- Your original JavaScript code remains exactly the same -->
+    <script>
+      // Your original JavaScript code here (unchanged)
+      function createParticle() {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+
+        const size = Math.random() * 5 + 3;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+
+        document.body.appendChild(particle);
+
+        const duration = Math.random() * 10 + 5;
+        const xDistance = Math.random() * 200 - 100;
+        const yDistance = Math.random() * 200 - 100;
+
+        particle.animate(
+          [
+            { transform: "translate(0, 0) scale(1)", opacity: 0.2 },
+            {
+              transform: `translate(${xDistance}px, ${yDistance}px) scale(1.5)`,
+              opacity: 0.5,
+            },
+            { transform: "translate(0, 0) scale(1)", opacity: 0.2 },
+          ],
+          {
+            duration: duration * 1000,
+            iterations: Infinity,
+            direction: "alternate",
+            easing: "ease-in-out",
+          }
+        );
+      }
+
+      // Create particles
+      for (let i = 0; i < 50; i++) {
+        createParticle();
+      }
+
+      // Status bar functionality
+      const statusBar = document.getElementById("statusBar");
+      let statusTimeout;
+
+      function showStatus(message) {
+        statusBar.textContent = message;
+        statusBar.classList.add("active");
+
+        clearTimeout(statusTimeout);
+        statusTimeout = setTimeout(() => {
+          statusBar.classList.remove("active");
+        }, 3000);
+      }
+
+      // Emergency button handler
+      function handleEmergency() {
+        showStatus("Connecting to emergency services...");
+        document.body.style.animation = "emergency 0.5s";
+        setTimeout(() => {
+          document.body.style.animation = "";
+        }, 500);
+      }
+
+      // Interactive feature items
+      document.querySelectorAll(".feature-item").forEach((item) => {
+        item.addEventListener("mouseover", () => {
+          item.style.backgroundColor = "#e0f2fe";
+        });
+        item.addEventListener("mouseout", () => {
+          item.style.backgroundColor = "";
+        });
+      });
+    </script>
+  </body>
+</html>

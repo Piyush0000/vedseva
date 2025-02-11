@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ved Seva - Medical Details</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "georgia";
+      }
+
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-light: #f0f9ff;
+        --card-bg: #ffffff;
+        --text-primary: #1e3a8a;
+        --text-secondary: #334155;
+        --accent: #3b82f6;
+        --nav-bg: #e0f2fe;
+        --pink: #ec4899;
+        --black: #000000;
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+      }
+
+      nav {
+        background-color: var(--nav-bg);
+        padding: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      .nav-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .page-title {
+        text-align: center;
+        color: var(--primary);
+        margin: 2rem 0;
+        font-size: 2rem;
+      }
+
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        padding: 2rem 0;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
+      }
+
+      .card-header {
+        padding: 2rem;
+        color: white;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .pink-header {
+        background-color: var(--pink);
+      }
+
+      .black-header {
+        background-color: var(--black);
+      }
+
+      .card-content {
+        padding: 2rem;
+      }
+
+      .register-button {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      .register-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .registration-message {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 1rem;
+      }
+
+      .facility-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+      }
+
+      .facility-name {
+        font-weight: bold;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .facility-details {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .book-facility {
+        display: block;
+        width: 100%;
+        padding: 0.5rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .book-facility:hover {
+        background-color: var(--primary-dark);
+      }
+
+      @media (max-width: 768px) {
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <h1 class="nav-title">
+          <span class="logo-pulse"></span>
+          वैदSeva
+        </h1>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h2 class="page-title">Medical Information</h2>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header pink-header">TESTS REQUIRED</div>
+          <div class="card-content">
+            <div class="facility-card">
+              <div class="facility-name">Complete Blood Count (CBC)</div>
+              <div class="facility-details">Priority: High</div>
+              <div class="facility-details">
+                Fasting Required: Yes (8 hours)
+              </div>
+            </div>
+            <div class="facility-card">
+              <div class="facility-name">Blood Sugar Test</div>
+              <div class="facility-details">Priority: Medium</div>
+              <div class="facility-details">
+                Fasting Required: Yes (8 hours)
+              </div>
+            </div>
+            <button class="register-button">Register for Tests</button>
+            <div class="registration-message">
+              Your name has been registered for the next test camp!
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header black-header">MEDS & NEARBY FACILITIES</div>
+          <div class="card-content">
+            <div class="facility-card">
+              <div class="facility-name">Prescribed Medications</div>
+              <div class="facility-details">
+                1. Paracetamol - 500mg (3 times/day)
+              </div>
+              <div class="facility-details">
+                2. Vitamin D3 - 60,000 IU (weekly)
+              </div>
+            </div>
+
+            <div class="facility-card">
+              <div class="facility-name">Rural Health Lab</div>
+              <div class="facility-details">Distance: 1.8 km</div>
+              <div class="facility-details">
+                Tests Available: Blood Tests, X-Ray
+              </div>
+              <div class="facility-details">Timings: 9 AM - 6 PM</div>
+              <button class="book-facility">Book Appointment</button>
+            </div>
+
+            <div class="facility-card">
+              <div class="facility-name">City Medical Store</div>
+              <div class="facility-details">Distance: 2.1 km</div>
+              <div class="facility-details">
+                All prescribed medicines available
+              </div>
+              <div class="facility-details">Timings: 8 AM - 10 PM</div>
+              <button class="book-facility">Get Directions</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Add click handler for register button
+      document
+        .querySelector(".register-button")
+        .addEventListener("click", function () {
+          this.textContent = "Registered!";
+          this.style.backgroundColor = "#059669"; // Success green color
+        });
+
+      // Add click handlers for facility buttons
+      document.querySelectorAll(".book-facility").forEach((button) => {
+        button.addEventListener("click", function () {
+          alert("Redirecting to booking/directions page...");
+        });
+      });
+    </script>
+  </body>
+</html>
