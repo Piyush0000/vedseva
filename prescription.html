@@ -1,174 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prescription</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background-color: #e8f0fe;
-        margin: 0;
-        position: relative;
-      }
-      .container {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        width: 80%;
-        max-width: 600px;
-        position: relative;
-      }
-      .header {
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .section {
-        margin-top: 15px;
-      }
-      .section h3 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: bold;
-      }
-      .info {
-        font-size: 14px;
-        margin-top: 5px;
-      }
-      .box {
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 5px;
-      }
-      .button-container {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 15px;
-        width: 900px;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      .print {
-        background-color: #0044cc;
-        color: white;
-      }
-      .more-info {
-        background-color: #007bff;
-        color: white;
-        margin-left: auto;
-      }
-      .stamp {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        width: 150px;
-      }
-      .loading {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 18px;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      .error {
-        color: red;
-        text-align: center;
-        margin: 20px 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="loading" class="loading" style="display: none;">
-      Loading patient data...
-    </div>
-
-    <div id="error" class="error" style="display: none;"></div>
-
-    <div class="button-container">
-      <button class="button print" onclick="window.print()">PRINT</button>
-      <a href="test_lab.html">
-        <button class="button more-info" id="extra">More info</button>
-      </a>
-    </div>
-
-    <div class="container" id="prescriptionContainer" style="display: none;">
-      <div class="header">
-        Dr. MOHIT CHOPRA, MD<br />17/10 Old Rajendra Nagar-110060<br />Phone no:
-        +91-XXXXXXXXXX
-      </div>
-
-      <div class="section">
-        <h3>Patient Information</h3>
-        <div class="box">
-          <div class="info" id="patientInfo1"></div>
-          <div class="info" id="patientInfo2"></div>
-          <div class="info" id="patientDate"></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Symptoms</h3>
-        <div class="box">
-          The patient presented with fever, cough, cold, and stomach ache.
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Diagnosis</h3>
-        <div class="box">Viral and stomach infection.</div>
-      </div>
-
-      <div class="section">
-        <h3>Test Required</h3>
-        <div class="box">
-          <ul>
-            <li>WIDAL Test (Test for typhoid)</li>
-            <li>CBC</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Medicine Required</h3>
-        <div class="box">
-          <ul>
-            <li>Dolo-650 (3x/day, 3 days)</li>
-            <li>Montek LC (1x/night, 3 days)</li>
-            <li>PAN40 (1x/day, 3 days)</li>
-          </ul>
-        </div>
-      </div>
-
-      <img src="logo.png" alt="Doctor Stamp" class="stamp" />
-    </div>
-
-    <script type="module">
+<script type="module">
       // Import Firebase SDK
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
       import {
         getAuth,
-        onAuthStateChanged
+        onAuthStateChanged,
+        setPersistence,
+        browserLocalPersistence
       } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
       import {
         getFirestore,
@@ -193,6 +30,13 @@
       const auth = getAuth(app);
       const db = getFirestore(app);
 
+      // Set persistence to LOCAL
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (error) {
+        console.error("Persistence error:", error);
+      }
+
       // Show loading state
       const showLoading = () => {
         document.getElementById('loading').style.display = 'block';
@@ -207,6 +51,13 @@
         const errorElement = document.getElementById('error');
         errorElement.textContent = message;
         errorElement.style.display = 'block';
+        
+        // Redirect to login if not authenticated
+        if (message.includes('log in')) {
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 2000);
+        }
       };
 
       // Show prescription container
@@ -230,6 +81,17 @@
           `Date: ${currentDate}`;
       };
 
+      // Try to get cached user data
+      const getCachedUserData = () => {
+        try {
+          const cachedData = localStorage.getItem('userData');
+          return cachedData ? JSON.parse(cachedData) : null;
+        } catch (error) {
+          console.error('Error reading cached data:', error);
+          return null;
+        }
+      };
+
       // Main function to fetch and display patient data
       const loadPatientData = async (user) => {
         try {
@@ -239,6 +101,15 @@
             throw new Error('No authenticated user found');
           }
 
+          // Try to get cached data first
+          const cachedData = getCachedUserData();
+          if (cachedData) {
+            updatePatientInfo(cachedData);
+            showPrescription();
+            return;
+          }
+
+          // If no cached data, fetch from Firestore
           const aadharNumber = user.email.split('@')[0];
           const usersRef = collection(db, 'users');
           const q = query(usersRef, where('aadhar', '==', aadharNumber));
@@ -249,6 +120,10 @@
           }
 
           const userData = querySnapshot.docs[0].data();
+          
+          // Cache the user data
+          localStorage.setItem('userData', JSON.stringify(userData));
+          
           updatePatientInfo(userData);
           showPrescription();
 
@@ -258,7 +133,25 @@
         }
       };
 
-      // Listen for authentication state changes
+      // Initial auth check
+      const initialAuthCheck = async () => {
+        showLoading();
+        
+        // Wait for a short time to allow auth to initialize
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          await loadPatientData(currentUser);
+        } else {
+          showError('Please log in to view prescription');
+        }
+      };
+
+      // Run initial auth check
+      initialAuthCheck();
+
+      // Also listen for auth state changes
       onAuthStateChanged(auth, (user) => {
         if (user) {
           loadPatientData(user);
@@ -267,5 +160,3 @@
         }
       });
     </script>
-  </body>
-</html>
