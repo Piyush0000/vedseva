@@ -80,16 +80,39 @@
         right: 10px;
         width: 150px;
       }
+      .loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .error {
+        color: red;
+        text-align: center;
+        margin: 20px 0;
+      }
     </style>
   </head>
   <body>
+    <div id="loading" class="loading" style="display: none;">
+      Loading patient data...
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+
     <div class="button-container">
       <button class="button print" onclick="window.print()">PRINT</button>
-      <a href="test_lab.html"
-        ><button class="button more-info" id="extra">More info</button></a
-      >
+      <a href="test_lab.html">
+        <button class="button more-info" id="extra">More info</button>
+      </a>
     </div>
-    <div class="container">
+
+    <div class="container" id="prescriptionContainer" style="display: none;">
       <div class="header">
         Dr. MOHIT CHOPRA, MD<br />17/10 Old Rajendra Nagar-110060<br />Phone no:
         +91-XXXXXXXXXX
@@ -98,13 +121,9 @@
       <div class="section">
         <h3>Patient Information</h3>
         <div class="box">
-          <div class="info">
-            Name: Akanksha Batra | Age: 25 | Height: 150 cm
-          </div>
-          <div class="info">
-            Blood Group: O+ | Gender: Female | Weight: 65 kg
-          </div>
-          <div class="info">Date: 10/2/2025</div>
+          <div class="info" id="patientInfo1"></div>
+          <div class="info" id="patientInfo2"></div>
+          <div class="info" id="patientDate"></div>
         </div>
       </div>
 
@@ -143,5 +162,110 @@
 
       <img src="logo.png" alt="Doctor Stamp" class="stamp" />
     </div>
+
+    <script type="module">
+      // Import Firebase SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged
+      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-18K-6BnKOxc1CDhkQAv5dWIEwOFT-go",
+        authDomain: "vedseva-5e40f.firebaseapp.com",
+        projectId: "vedseva-5e40f",
+        storageBucket: "vedseva-5e40f.appspot.com",
+        messagingSenderId: "28374532477",
+        appId: "1:28374532477:web:c5076c500cebaa4b630c14",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // Show loading state
+      const showLoading = () => {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('prescriptionContainer').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+      };
+
+      // Show error message
+      const showError = (message) => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('prescriptionContainer').style.display = 'none';
+        const errorElement = document.getElementById('error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+      };
+
+      // Show prescription container
+      const showPrescription = () => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+        document.getElementById('prescriptionContainer').style.display = 'block';
+      };
+
+      // Update patient information
+      const updatePatientInfo = (userData) => {
+        const currentDate = new Date().toLocaleDateString('en-GB');
+        
+        document.getElementById('patientInfo1').textContent = 
+          `Name: ${userData.name} | Age: ${userData.age} | Height: ${userData.height} cm`;
+        
+        document.getElementById('patientInfo2').textContent = 
+          `Blood Group: ${userData.bloodGroup || 'Not specified'} | Gender: ${userData.gender} | Weight: ${userData.weight} kg`;
+        
+        document.getElementById('patientDate').textContent = 
+          `Date: ${currentDate}`;
+      };
+
+      // Main function to fetch and display patient data
+      const loadPatientData = async (user) => {
+        try {
+          showLoading();
+
+          if (!user) {
+            throw new Error('No authenticated user found');
+          }
+
+          const aadharNumber = user.email.split('@')[0];
+          const usersRef = collection(db, 'users');
+          const q = query(usersRef, where('aadhar', '==', aadharNumber));
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            throw new Error('Patient data not found');
+          }
+
+          const userData = querySnapshot.docs[0].data();
+          updatePatientInfo(userData);
+          showPrescription();
+
+        } catch (error) {
+          console.error('Error loading patient data:', error);
+          showError(error.message);
+        }
+      };
+
+      // Listen for authentication state changes
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loadPatientData(user);
+        } else {
+          showError('Please log in to view prescription');
+        }
+      });
+    </script>
   </body>
 </html>
