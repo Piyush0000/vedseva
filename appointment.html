@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doctor Availability</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -330,11 +330,11 @@
     </div>
 
     <script>
-      // Initialize variables to track selected doctor and time slot
+      
       let selectedDoctor = null;
       let selectedTime = null;
 
-      // Add click handlers for filter buttons
+      
       const filterButtons = document.querySelectorAll(".filter-btn");
       filterButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -343,35 +343,34 @@
         });
       });
 
-      // Add click handlers for time slots
+      
       document.querySelectorAll(".time-slot").forEach((slot) => {
         slot.addEventListener("click", () => {
           if (!slot.classList.contains("available")) return;
 
-          // Remove selected class from all time slots in the same doctor card
+          
           const doctorCard = slot.closest(".doctor-card");
           doctorCard.querySelectorAll(".time-slot").forEach((s) => {
             s.classList.remove("selected");
           });
 
-          // Add selected class to clicked time slot
+          
           slot.classList.add("selected");
 
-          // Store selected doctor and time
+         
           selectedDoctor =
             doctorCard.querySelector(".doctor-info h2").textContent;
           selectedTime = slot.textContent;
 
-          // Enable the book button for this doctor card
           doctorCard.querySelector(".book-btn").disabled = false;
         });
       });
 
-      // Add click handlers for book buttons
+      
       document.querySelectorAll(".book-btn").forEach((button) => {
         button.addEventListener("click", () => {
           if (selectedDoctor && selectedTime) {
-            // Create appointment object
+            
             const appointment = {
               doctorName: selectedDoctor,
               time: selectedTime,
@@ -379,33 +378,31 @@
               status: "Upcoming",
             };
 
-            // Get existing appointments or initialize empty array
             let appointments =
               JSON.parse(localStorage.getItem("appointments")) || [];
 
-            // Add new appointment
+         
             appointments.push(appointment);
 
-            // Save to localStorage
+            
             localStorage.setItem("appointments", JSON.stringify(appointments));
 
-            // Show success message
+            
             const successMessage = document.getElementById("successMessage");
             successMessage.style.display = "block";
 
-            // Hide success message after 3 seconds
             setTimeout(() => {
               successMessage.style.display = "none";
             }, 3000);
 
-            // Disable the selected time slot
+          
             const selectedSlot = document.querySelector(".time-slot.selected");
             if (selectedSlot) {
               selectedSlot.classList.remove("available", "selected");
               selectedSlot.style.backgroundColor = "#cccccc";
             }
 
-            // Reset selection
+            
             selectedDoctor = null;
             selectedTime = null;
             button.disabled = true;
@@ -413,7 +410,7 @@
         });
       });
 
-      // Update current time
+      
       function updateTime() {
         const timeElement = document.querySelector(".time");
         const now = new Date();
@@ -423,7 +420,7 @@
         });
       }
 
-      // Update time every minute
+     
       updateTime();
       setInterval(updateTime, 60000);
     </script>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prescription</title>
+    <title>वैदSeva</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -104,7 +104,14 @@
           <div class="info">
             Blood Group: O+ | Gender: Female | Weight: 65 kg
           </div>
-          <div class="info">Date: 10/2/2025</div>
+          <div class="info" id="date-info"></div>
+
+          <script>
+          const currentDate = new Date();
+          const formattedDate = currentDate.toLocaleDateString("en-US"); // Format: MM/DD/YYYY
+          document.getElementById("date-info").innerHTML = `Date: ${formattedDate}`;
+          </script>
+
         </div>
       </div>
 

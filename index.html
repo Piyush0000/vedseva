@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ved Seva</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -269,7 +269,7 @@
     </style>
   </head>
   <body>
-    <!-- Rest of the HTML remains exactly the same as in your original code -->
+    
     <nav>
       <div class="container">
         <h1 class="nav-title">
@@ -355,9 +355,8 @@
 
     <div class="status-bar" id="statusBar">Processing...</div>
 
-    <!-- Your original JavaScript code remains exactly the same -->
     <script>
-      // Your original JavaScript code here (unchanged)
+ 
       function createParticle() {
         const particle = document.createElement("div");
         particle.className = "particle";
@@ -393,12 +392,11 @@
         );
       }
 
-      // Create particles
       for (let i = 0; i < 50; i++) {
         createParticle();
       }
 
-      // Status bar functionality
+    
       const statusBar = document.getElementById("statusBar");
       let statusTimeout;
 
@@ -412,7 +410,6 @@
         }, 3000);
       }
 
-      // Emergency button handler
       function handleEmergency() {
         showStatus("Connecting to emergency services...");
         document.body.style.animation = "emergency 0.5s";
@@ -421,7 +418,7 @@
         }, 500);
       }
 
-      // Interactive feature items
+     
       document.querySelectorAll(".feature-item").forEach((item) => {
         item.addEventListener("mouseover", () => {
           item.style.backgroundColor = "#e0f2fe";

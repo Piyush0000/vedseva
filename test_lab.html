@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ved Seva - Medical Details</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -116,7 +116,7 @@
         text-align: center;
         color: var(--text-secondary);
         margin-top: 1rem;
-        display: none; /* Initially hidden */
+        display: none;
       }
 
       .facility-card {
@@ -235,17 +235,17 @@
     </main>
 
     <script>
-      // Add click handler for register button
+      
       document
         .querySelector(".register-button")
         .addEventListener("click", function () {
           document.querySelector(".registration-message").style.display =
             "block";
           this.textContent = "Registered!";
-          this.style.backgroundColor = "#059669"; // Success green color
+          this.style.backgroundColor = "#059669"; 
         });
 
-      // Add click handlers for facility buttons
+    
       document.querySelectorAll(".book-facility").forEach((button) => {
         button.addEventListener("click", function () {
           alert("Redirecting to booking/directions page...");

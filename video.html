@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Ved Seva - Video Consultation</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -245,7 +245,6 @@
           <div class="appointment-status">${appointment.status}</div>
         `;
 
-            // Click event to start call
             appointmentCard.addEventListener("click", function () {
               startCall(appointment);
             });
@@ -267,9 +266,9 @@
           document.getElementById("callControls").style.display = "none";
         }
 
-        window.endCall = endCall; // Expose function globally
+        window.endCall = endCall; 
 
-        loadAppointments(); // Load all stored appointments
+        loadAppointments(); 
       });
     </script>
   </body>

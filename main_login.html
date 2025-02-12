@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ved Seva - Login</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -149,6 +149,16 @@
       .btn:active {
         transform: translateY(0);
       }
+      .test-credentials {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--primary);
+        font-size: 1.1rem;
+      }
+      .credentials-text {
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+      }
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -210,22 +220,48 @@
           </div>
           <div class="form-group">
             <label for="phone">Password</label>
-            <input
-              type="password"
-              id="phone"
-              pattern="[0-9]{10}"
-              maxlength="10"
-              placeholder="Enter Phone Number"
-              required
-            />
+            <div style="position: relative; display: flex; align-items: center;">
+              <input
+                type="password"
+                id="phone"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                placeholder="Enter Phone Number"
+                required
+                style="padding-right: 30px;"
+              />
+              <button
+                type="button"
+                onclick="togglePassword()"
+                style="position: absolute; right: 5px; background: none; border: none; cursor: pointer;"
+              >
+                👁️
+              </button>
+            </div>
           </div>
           <button type="submit" class="btn">Login</button>
         </form>
+        <div class="test-credentials">
+          <div>For Testing use the credentials written below:</div>
+          <div class="credentials-text">Username: 112233445566</div>
+          <div class="credentials-text">Password: 1234567890</div>
+        </div>
       </div>
     </div>
 
+    <script>
+      function togglePassword() {
+        let input = document.getElementById("phone");
+        if (input.type === "password") {
+          input.type = "text";
+        } else {
+          input.type = "password";
+        }
+      }
+    </script>
+
     <script type="module">
-      // Import Firebase SDK
+   
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
       import {
         getAuth,
@@ -239,7 +275,7 @@
         getDocs,
       } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
 
-      // Firebase Configuration
+  
       const firebaseConfig = {
         apiKey: "AIzaSyD-18K-6BnKOxc1CDhkQAv5dWIEwOFT-go",
         authDomain: "vedseva-5e40f.firebaseapp.com",
@@ -249,12 +285,12 @@
         appId: "1:28374532477:web:c5076c500cebaa4b630c14",
       };
 
-      // Initialize Firebase
+     
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-      // Function to display user data
+   
       const displayUserData = (userData) => {
         const userInfo = document.getElementById("userInfo");
         userInfo.innerHTML = `
@@ -268,7 +304,7 @@
         document.getElementById("userDetails").style.display = "block";
       };
 
-      // Handle Login Form Submission
+ 
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
@@ -278,7 +314,7 @@
           const password = document.getElementById("password").value;
 
           try {
-            // First, try to find the user by aadhar number in Firestore
+           
             const usersRef = collection(db, "users");
             const q = query(usersRef, where("aadhar", "==", aadhar));
             const querySnapshot = await getDocs(q);
@@ -288,23 +324,21 @@
               return;
             }
 
-            // Get user data
             const userData = querySnapshot.docs[0].data();
 
-            // Now try to sign in
+           
             await signInWithEmailAndPassword(
               auth,
               `${aadhar}@vedseva.com`,
               password
             );
 
-            // If login successful, display the data
+         
             displayUserData(userData);
             alert("✅ Login successful!");
           } catch (error) {
             console.error("Login error:", error);
 
-            // More specific error messages
             if (error.code === "auth/invalid-email") {
               alert("Invalid Aadhar format");
             } else if (error.code === "auth/user-not-found") {
@@ -317,10 +351,10 @@
           }
         });
 
-      // Add input formatting for Aadhar number
+   
       const aadharInput = document.getElementById("aadhar");
       aadharInput.addEventListener("input", (e) => {
-        e.target.value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+        e.target.value = e.target.value.replace(/\D/g, ""); 
       });
 
       document

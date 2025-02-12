@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ved Seva - Sign Up</title>
+    <title>वैदSeva</title>
     <style>
       * {
         margin: 0;
@@ -372,7 +372,7 @@
               type="password"
               id="password"
               required
-              placeholder="Enter password"
+              placeholder="Your Password is your 10-digit phone number"
               minlength="6"
             />
             <span class="error-message"
@@ -385,18 +385,16 @@
     </div>
 
     <div class="success-message" id="successMessage">
-      Registration successful! Redirecting...
+      Registration successful! Go to Login Page!
     </div>
 
     <script type="module">
-      // [Previous Firebase configuration remains the same]
-
-      // Form validation and animation
+    
       const form = document.getElementById("signupForm");
       const inputs = form.querySelectorAll("input, select");
       const submitButton = form.querySelector('button[type="submit"]');
 
-      // Add focus animation to form groups
+      
       inputs.forEach((input) => {
         input.addEventListener("focus", () => {
           input.closest(".form-group").style.transform = "translateY(-5px)";
@@ -406,14 +404,14 @@
           input.closest(".form-group").style.transform = "translateY(0)";
         });
 
-        // Show error messages on invalid input
+       
         input.addEventListener("invalid", (e) => {
           e.preventDefault();
           const errorMessage = input.nextElementSibling;
           errorMessage.style.display = "block";
         });
 
-        // Hide error message when input becomes valid
+        
         input.addEventListener("input", () => {
           const errorMessage = input.nextElementSibling;
           if (input.checkValidity()) {
@@ -422,21 +420,21 @@
         });
       });
 
-      // Add loading animation on form submit
+  
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         submitButton.classList.add("loading");
         submitButton.textContent = "Processing...";
 
-        // Simulate form submission delay
+        
         try {
           await new Promise((resolve) => setTimeout(resolve, 1500));
 
-          // Show success message
+          
           const successMessage = document.getElementById("successMessage");
           successMessage.classList.add("show");
 
-          // Reset form and button
+       
           setTimeout(() => {
             form.reset();
             submitButton.classList.remove("loading");
