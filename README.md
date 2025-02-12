@@ -22,7 +22,7 @@ https://vedsevanew.vercel.app/
 6. *Medicos directory*: User gets direct access to nearby medical shops and testing laboratories. 
 
 ## How To Access
-For testing purposes use the following Login credentials:
+For testing, use the following Login credentials:
 - Username: 112233445566
 - Password: 1234567890
 <br>
