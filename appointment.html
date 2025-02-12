@@ -208,6 +208,17 @@
         animation: slideIn 0.3s ease-out;
       }
 
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .time-slot button:disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+      }
+
       @keyframes slideIn {
         from {
           transform: translateX(100%);
@@ -234,7 +245,10 @@
     <div class="doctors-grid">
       <div class="doctor-card">
         <div class="doctor-header">
-          <div class="avatar"></div>
+          <div
+            class="avatar"
+            style="background-image: url('doc1.jpg'); background-size: cover"
+          ></div>
           <div class="doctor-info">
             <h2>Dr. Mohit Chopra</h2>
             <p>General Physician</p>
@@ -258,7 +272,10 @@
 
       <div class="doctor-card">
         <div class="doctor-header">
-          <div class="avatar"></div>
+          <div
+            class="avatar"
+            style="background-image: url('doc2.jpg'); background-size: cover"
+          ></div>
           <div class="doctor-info">
             <h2>Dr. Michael Chen</h2>
             <p>Cardiologist</p>
@@ -270,19 +287,22 @@
           <p>Next Available: 2:30 PM</p>
         </div>
         <div class="time-slots">
-          <div class="time-slot available">2:30</div>
-          <div class="time-slot available">3:00</div>
-          <div class="time-slot available">3:30</div>
-          <div class="time-slot available">4:00</div>
-          <div class="time-slot available">4:30</div>
-          <div class="time-slot available">5:00</div>
+          <div class="time-slot"><button disabled>2:30</button></div>
+          <div class="time-slot"><button disabled>3:00</button></div>
+          <div class="time-slot"><button disabled>3:30</button></div>
+          <div class="time-slot"><button disabled>4:00</button></div>
+          <div class="time-slot"><button disabled>4:30</button></div>
+          <div class="time-slot"><button disabled>5:00</button></div>
         </div>
         <button class="book-btn" disabled>Book Appointment</button>
       </div>
 
       <div class="doctor-card">
         <div class="doctor-header">
-          <div class="avatar"></div>
+          <div
+            class="avatar"
+            style="background-image: url('doc3.jpg'); background-size: cover"
+          ></div>
           <div class="doctor-info">
             <h2>Dr. Priya Patel</h2>
             <p>Pediatrician</p>
@@ -294,12 +314,12 @@
           <p>Returns at: 2:00 PM</p>
         </div>
         <div class="time-slots">
-          <div class="time-slot available">2:00</div>
-          <div class="time-slot available">2:30</div>
-          <div class="time-slot available">3:00</div>
-          <div class="time-slot available">3:30</div>
-          <div class="time-slot available">4:00</div>
-          <div class="time-slot available">4:30</div>
+          <div class="time-slot"><button disabled>2:00</button></div>
+          <div class="time-slot"><button disabled>2:30</button></div>
+          <div class="time-slot"><button disabled>3:00</button></div>
+          <div class="time-slot"><button disabled>3:30</button></div>
+          <div class="time-slot"><button disabled>4:00</button></div>
+          <div class="time-slot"><button disabled>4:30</button></div>
         </div>
         <button class="book-btn" disabled>Book Appointment</button>
       </div>
