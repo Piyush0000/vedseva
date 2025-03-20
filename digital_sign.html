@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Signature Pad</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+    
+    .signature-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .signature-pad-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      cursor: crosshair;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    button.clear {
+      background-color: #f44336;
+    }
+    
+    button.clear:hover {
+      background-color: #d32f2f;
+    }
+    
+    .signature-line {
+      position: absolute;
+      bottom: 30px;
+      left: 10px;
+      right: 10px;
+      border-bottom: 1px solid #333;
+    }
+    
+    .feedback-message {
+      margin-top: 10px;
+      color: #4CAF50;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="signature-container">
+    <h2>Digital Signature</h2>
+    <p>Please sign in the box below:</p>
+    
+    <div class="signature-pad-container">
+      <canvas id="signaturePad"></canvas>
+      <div class="signature-line"></div>
+    </div>
+    
+    <div class="button-container">
+      <button id="clearButton" class="clear">Clear</button>
+      <button id="saveButton">Save Signature</button>
+    </div>
+    
+    <div id="feedbackMessage" class="feedback-message">Signature saved! Redirecting...</div>
+    
+    <div id="signatureImage"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const canvas = document.getElementById('signaturePad');
+      const clearButton = document.getElementById('clearButton');
+      const saveButton = document.getElementById('saveButton');
+      const signatureImage = document.getElementById('signatureImage');
+      const feedbackMessage = document.getElementById('feedbackMessage');
+      const ctx = canvas.getContext('2d');
+      let isDrawing = false;
+      
+      // Set canvas dimensions to match display size
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000000';
+      }
+      
+      // Initialize canvas
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      // Drawing events
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      
+      // Touch events for mobile
+      canvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup');
+        canvas.dispatchEvent(mouseEvent);
+      }, { passive: false });
+      
+      // Drawing functions
+      function startDrawing(e) {
+        isDrawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - canvas.getBoundingClientRect().left, 
+                   e.clientY - canvas.getBoundingClientRect().top);
+      }
+      
+      function draw(e) {
+        if (!isDrawing) return;
+        ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, 
+                   e.clientY - canvas.getBoundingClientRect().top);
+        ctx.stroke();
+      }
+      
+      function stopDrawing() {
+        isDrawing = false;
+      }
+      
+      // Clear signature
+      clearButton.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signatureImage.innerHTML = '';
+        feedbackMessage.style.display = 'none';
+      });
+      
+      // Save signature
+      saveButton.addEventListener('click', function() {
+        if (isCanvasEmpty()) {
+          alert('Please provide a signature before saving.');
+          return;
+        }
+        
+        const dataURL = canvas.toDataURL('image/png');
+        
+        // Display the signature image
+        signatureImage.innerHTML = `<img src="${dataURL}" alt="Signature" style="max-width: 100%; margin-top: 10px;">`;
+        
+        // Show feedback message
+        feedbackMessage.style.display = 'block';
+        
+        // Here you can add code to send the signature to your server
+        console.log('Signature data URL:', dataURL);
+        // Example: fetch('/api/save-signature', { method: 'POST', body: JSON.stringify({ signature: dataURL }) });
+        
+        // Redirect after 2 seconds
+        setTimeout(function() {
+          window.location.href = 'prescription.html';
+        }, 2000);
+      });
+      
+      // Check if canvas is empty
+      function isCanvasEmpty() {
+        const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        for (let i = 0; i < pixelData.length; i += 4) {
+          if (pixelData[i + 3] !== 0) return false;
+        }
+        return true;
+      }
+    });
+  </script>
+</body>
+</html>

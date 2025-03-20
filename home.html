@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>वैदSeva - Healthcare Initiative</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e6f2ff 0%, #F0F9FF 100%);
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background-color: #e6f2ff;
+            width: 100%;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(65, 105, 225, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-logo-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4169e1;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .navbar-logo-text {
+            color: #4169e1;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .navbar-links {
+            margin-left: auto;
+            display: flex;
+            gap: 25px;
+        }
+        
+        .navbar-link {
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-link:hover {
+            color: #4169e1;
+        }
+        
+        /* Main Content Container */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(65, 105, 225, 0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -18px;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4169e1, transparent);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-text {
+            color: #4169e1;
+            font-size: 34px;
+            font-weight: 600;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.08);
+            letter-spacing: 0.5px;
+        }
+        
+        .tagline {
+            font-size: 22px;
+            color: #333;
+            text-align: center;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        .description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555;
+            text-align: center;
+            margin: 10px 0 15px;
+            max-width: 85%;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 25px;
+        }
+        
+        .option-card {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4169e1, #6495ed);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        
+        .option-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(65, 105, 225, 0.15);
+        }
+        
+        .option-card.selected {
+            background-color: #f0f7ff;
+            border: 2px solid #4169e1;
+            box-shadow: 0 6px 20px rgba(65, 105, 225, 0.2);
+        }
+        
+        .option-card.selected::before {
+            transform: scaleX(1);
+        }
+        
+        .option-card h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #222;
+            font-weight: 600;
+        }
+        
+        .option-card p {
+            font-size: 13px;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.5;
+            opacity: 0;
+            max-height: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .option-card:hover p {
+            opacity: 1;
+            max-height: 80px;
+        }
+        
+        .option-icon {
+            font-size: 36px;
+            margin: 5px 0 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .option-card:hover .option-icon {
+            transform: scale(1.1);
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 35%;
+            margin: 0 auto 30px;
+            padding: 12px 0;
+            background: linear-gradient(135deg, #4169e1, #5a7ce7);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(65, 105, 225, 0.35);
+        }
+        
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #c5c5c5, #e0e0e0);
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .additional-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .link {
+            color: #4169e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        .link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1.5px;
+            bottom: 0;
+            left: 0;
+            background-color: #4169e1;
+            transition: width 0.3s ease;
+        }
+        
+        .link:hover {
+            color: #1e40af;
+        }
+        
+        .link:hover::after {
+            width: 100%;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 12px;
+            color: #777;
+            padding-top: 15px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        /* Add subtle animation for the container on page load */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .logo-text {
+                font-size: 30px;
+            }
+            
+            .submit-btn {
+                width: 50%;
+            }
+            
+            .navbar {
+                padding: 10px 20px;
+            }
+            
+            .navbar-links {
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .options {
+                flex-direction: column;
+            }
+            
+            .option-card {
+                margin-bottom: 15px;
+            }
+            
+            .submit-btn {
+                width: 70%;
+            }
+            
+            .additional-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .navbar-links {
+                display: none;
+            }
+            
+            .navbar-menu-icon {
+                display: block;
+                margin-left: auto;
+                font-size: 24px;
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-logo">
+            <div class="navbar-logo-dot"></div>
+            <div class="navbar-logo-text">वैदSeva</div>
+        </div>
+        <div class="navbar-links">
+            <a href="#" class="navbar-link">Home</a>
+            <a href="#" class="navbar-link">Services</a>
+            <a href="#" class="navbar-link">Doctors</a>
+            <a href="#" class="navbar-link">About Us</a>
+            <a href="#" class="navbar-link">Contact</a>
+        </div>
+        <div class="navbar-menu-icon" style="display: none;">☰</div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="logo-container">
+                    <img src="logonew.png" alt="वैदSeva Logo" class="logo-image">
+                    <div class="logo-text">वैदSeva</div>
+                </div>
+                <h1 class="tagline">Your health, Our priority</h1>
+                <p class="description">
+                    वैदSeva is a healthcare initiative designed to make doctor consultations more accessible and affordable. We operate through kiosk-based stations placed near chemists in villages, bridging the healthcare gap for rural communities.
+                </p>
+            </div>
+            
+            <div class="options">
+                <div class="option-card" id="doctor-option">
+                    <div class="option-icon">👨‍⚕️</div>
+                    <h3>Doctor</h3>
+                    <p>Login as a healthcare provider to consult with patients and manage appointments</p>
+                </div>
+                <div class="option-card" id="patient-option">
+                    <div class="option-icon">👨‍👩‍👧</div>
+                    <h3>Patient</h3>
+                    <p>Login as a patient to book appointments and access quality healthcare services</p>
+                </div>
+            </div>
+            
+            <button class="submit-btn" id="submit-btn" disabled>Submit</button>
+            
+            <div class="additional-links">
+                <a href="#" class="link">Need Help?</a>
+                <a href="#" class="link">About Us</a>
+                <a href="#" class="link">Emergency</a>
+            </div>
+            
+            <div class="footer">
+                © 2025 वैदSeva Healthcare. All rights reserved.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM elements
+        const doctorOption = document.getElementById('doctor-option');
+        const patientOption = document.getElementById('patient-option');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        // Selection state
+        let selectedOption = null;
+        
+        // Option selection
+        doctorOption.addEventListener('click', function() {
+            selectOption('doctor');
+        });
+        
+        patientOption.addEventListener('click', function() {
+            selectOption('patient');
+        });
+        
+        function selectOption(option) {
+            // Reset both options
+            doctorOption.classList.remove('selected');
+            patientOption.classList.remove('selected');
+            
+            // Set selected option
+            if (option === 'doctor') {
+                doctorOption.classList.add('selected');
+                selectedOption = 'doctor';
+            } else {
+                patientOption.classList.add('selected');
+                selectedOption = 'patient';
+            }
+            
+            // Enable submit button
+            submitBtn.disabled = false;
+        }
+        
+        // Submit button action
+        submitBtn.addEventListener('click', function() {
+            if (!selectedOption) {
+                alert('Please select Doctor or Patient to continue');
+                return;
+            }
+            
+            // Add subtle animation
+            submitBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                submitBtn.style.transform = 'scale(1)';
+            }, 120);
+            
+            // Redirect based on selection
+            if (selectedOption === 'doctor') {
+                window.location.href = 'doclogin.html';
+            } else if (selectedOption === 'patient') {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Enhanced UI interactions
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.backgroundColor = '#f8fbff';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.backgroundColor = 'white';
+                } else {
+                    this.style.backgroundColor = '#f0f7ff';
+                }
+            });
+        });
+        
+        // Add subtle hover effect for submit button
+        submitBtn.addEventListener('mouseenter', function() {
+            if (!this.disabled) {
+                this.style.transform = 'translateY(-2px)';
+            }
+        });
+        
+        submitBtn.addEventListener('mouseleave', function() {
+            if (!this.disabled) {
+                this.style.transform = 'translateY(0)';
+            }
+        });
+        
+        // Mobile menu toggle
+        const menuIcon = document.querySelector('.navbar-menu-icon');
+        const navLinks = document.querySelector('.navbar-links');
+        
+        if (menuIcon) {
+            menuIcon.addEventListener('click', function() {
+                if (navLinks.style.display === 'flex') {
+                    navLinks.style.display = 'none';
+                } else {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '50px';
+                    navLinks.style.right = '20px';
+                    navLinks.style.backgroundColor = '#fff';
+                    navLinks.style.padding = '15px';
+                    navLinks.style.borderRadius = '8px';
+                    navLinks.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                }
+            });
+        }
+        
+        // Add page load animation for a better first impression
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

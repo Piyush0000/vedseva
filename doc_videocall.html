@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine and Test Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9ff;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 220px;
+            background-color: #f5f9ff;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-area {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+        
+        .bottom-section {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .medicines-section, .tests-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1e3a64;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            background-color: #f5f5f5;
+            margin-top: 5px;
+        }
+        
+        .medicine-item, .test-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f5f9ff;
+        }
+        
+        .done-button {
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            float: right;
+            margin-top: 10px;
+        }
+        
+        .medicine-details, .test-details {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        #medicine-list, #test-list {
+            display: none;
+            max-height: 380px; /* Adjusted to show approximately 12 items before scrolling */
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: white;
+
+        }
+    </style>
+</head>
+<body>
+    <!-- Left sidebar with both medicines and tests sections -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <h1>Medicines</h1>
+            <input type="text" id="medicine-search" placeholder="Search for medicines" onclick="showMedicineList()" oninput="searchMedicines()">
+            <div id="medicine-list">
+                <!-- Medicines will be populated by search -->
+            </div>
+        </div>
+        
+        <div class="sidebar-section">
+            <h1>Tests</h1>
+            <input type="text" id="test-search" placeholder="Search for tests" onclick="showTestList()" oninput="searchTests()">
+            <div id="test-list">
+                <!-- Tests will be populated by search -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="content-area">
+            <!-- This area is empty initially -->
+        </div>
+        
+        <!-- Bottom Section -->
+        <div class="bottom-section">
+            <!-- Medicines Section -->
+            <div class="medicines-section">
+                <h1>Medicines</h1>
+                <div id="selected-medicines"></div>
+            </div>
+            
+            <!-- Tests Section -->
+            <div class="tests-section">
+                <h1>Tests</h1>
+                <div id="selected-tests"></div>
+            </div>
+            
+            <a href="digital_sign.html"><button class="done-button">Done</button></a>
+        </div>
+    </div>
+
+    <script>
+        // Global database of medicines and tests
+        const medicineDatabase = [
+            'Dolo-650', 'Montek LC', 'Paracetamol', 'Aspirin', 'Ibuprofen', 
+            'Crocin', 'Disprin', 'Allegra', 'Cetrizine', 'Benadryl',
+            'Atorvastatin', 'Metformin', 'Lisinopril', 'Amlodipine', 'Metoprolol',
+            'Omeprazole', 'Losartan', 'Albuterol', 'Gabapentin', 'Levothyroxine'
+        ];
+        
+        const testDatabase = [
+            'WIDAL Test', 'CBC', 'Blood Sugar', 'Lipid Profile', 'Thyroid Profile',
+            'Liver Function Test', 'Kidney Function Test', 'Complete Urine Examination',
+            'ECG', 'X-Ray', 'MRI', 'CT Scan', 'Ultrasound', 'PET Scan',
+            'Hemoglobin Test', 'ESR', 'CRP', 'HIV Test', 'HbA1c', 'Vitamin D Test'
+        ];
+        
+        // Function to show medicine list when search bar is clicked
+        function showMedicineList() {
+            document.getElementById('medicine-list').style.display = 'block';
+            if (document.getElementById('medicine-list').children.length === 0) {
+                searchMedicines();
+            }
+        }
+        
+        // Function to show test list when search bar is clicked
+        function showTestList() {
+            document.getElementById('test-list').style.display = 'block';
+            if (document.getElementById('test-list').children.length === 0) {
+                searchTests();
+            }
+        }
+
+        // Function to toggle details display
+        function toggleDetails(id) {
+            const details = document.getElementById(id);
+            if (details.style.display === 'block') {
+                details.style.display = 'none';
+            } else {
+                details.style.display = 'block';
+            }
+        }
+        
+        // Function to add medicine to selected list
+        function addMedicine(name, durationId, quantityId) {
+            const duration = document.getElementById(durationId).value || 'Not specified';
+            const quantity = document.getElementById(quantityId).value || 'Not specified';
+            
+            const medicineElement = document.createElement('div');
+            medicineElement.className = 'medicine-item';
+            medicineElement.innerHTML = `
+                <strong>${name}</strong><br>
+                Duration: ${duration}<br>
+                Quantity: ${quantity}
+            `;
+            
+            document.getElementById('selected-medicines').appendChild(medicineElement);
+            
+            // Clear inputs
+            document.getElementById(durationId).value = '';
+            document.getElementById(quantityId).value = '';
+        }
+        
+        // Function to add test to selected list
+        function addTest(name) {
+            const testElement = document.createElement('div');
+            testElement.className = 'test-item';
+            testElement.innerHTML = `<strong>${name}</strong>`;
+            
+            document.getElementById('selected-tests').appendChild(testElement);
+        }
+        
+        // Function to search medicines
+        function searchMedicines() {
+            const searchTerm = document.getElementById('medicine-search').value.toLowerCase();
+            const medicineList = document.getElementById('medicine-list');
+            
+            // Clear current list
+            medicineList.innerHTML = '';
+            
+            // Filter and add matching medicines
+            let counter = 1;
+            medicineDatabase.filter(medicine => medicine.toLowerCase().includes(searchTerm))
+                .forEach(medicine => {
+                    const id = `search-medicine-${counter}`;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item';
+                    itemDiv.innerHTML = `
+                        <span>${counter}. ${medicine}</span>
+                        <div class="checkbox" onclick="toggleDetails('${id}')"></div>
+                    `;
+                    
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'medicine-details';
+                    detailsDiv.id = id;
+                    detailsDiv.innerHTML = `
+                        <input type="text" class="input-field" placeholder="Duration" id="duration-${id}">
+                        <input type="text" class="input-field" placeholder="Quantity" id="quantity-${id}">
+                        <button onclick="addMedicine('${medicine}', 'duration-${id}', 'quantity-${id}')">Add</button>
+                    `;
+                    
+                    medicineList.appendChild(itemDiv);
+                    medicineList.appendChild(detailsDiv);
+                    
+                    counter++;
+                });
+        }
+        
+        // Function to search tests
+        function searchTests() {
+            const searchTerm = document.getElementById('test-search').value.toLowerCase();
+            const testList = document.getElementById('test-list');
+            
+            // Clear current list
+            testList.innerHTML = '';
+            
+            // Filter and add matching tests
+            let counter = 1;
+            testDatabase.filter(test => test.toLowerCase().includes(searchTerm))
+                .forEach(test => {
+                    const id = `search-test-${counter}`;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item';
+                    itemDiv.innerHTML = `
+                        <span>${counter}. ${test}</span>
+                        <div class="checkbox" onclick="toggleDetails('${id}')"></div>
+                    `;
+                    
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'medicine-details';
+                    detailsDiv.id = id;
+                    detailsDiv.innerHTML = `
+                        <button onclick="addTest('${test}')">Add</button>
+                    `;
+                    
+                    testList.appendChild(itemDiv);
+                    testList.appendChild(detailsDiv);
+                    
+                    counter++;
+                });
+        }
+        
+        // Add event listener to close the lists when clicking outside
+        document.addEventListener('click', function(event) {
+            const medicineSearch = document.getElementById('medicine-search');
+            const testSearch = document.getElementById('test-search');
+            const medicineList = document.getElementById('medicine-list');
+            const testList = document.getElementById('test-list');
+            
+            if (event.target !== medicineSearch && !medicineList.contains(event.target) && 
+                event.target !== testSearch && !testList.contains(event.target)) {
+                medicineList.style.display = 'none';
+                testList.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
