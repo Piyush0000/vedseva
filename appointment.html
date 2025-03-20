@@ -219,6 +219,43 @@
         border: 1px solid #dee2e6;
       }
 
+      .cleanup-section {
+        margin-top: 30px;
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .cleanup-section h2 {
+        color: #1a1a1a;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+
+      .cleanup-btn {
+        padding: 8px 16px;
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+      }
+
+      .cleanup-btn:hover {
+        background-color: #e63946;
+      }
+
+      .expired-count {
+        margin-left: 10px;
+        background-color: #ffe0e0;
+        color: #c5221f;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+
       @keyframes slideIn {
         from {
           transform: translateX(100%);
@@ -226,6 +263,49 @@
         to {
           transform: translateX(0);
         }
+      }
+
+      .appointments-list {
+        margin-top: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .appointment-item {
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .appointment-item:last-child {
+        border-bottom: none;
+      }
+
+      .appointment-item.expired {
+        background-color: #fff8e8;
+      }
+
+      .appointment-info {
+        flex-grow: 1;
+      }
+
+      .appointment-info p {
+        margin: 3px 0;
+        font-size: 14px;
+      }
+
+      .appointment-actions button {
+        background: none;
+        border: none;
+        color: #ff6b6b;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .appointment-actions button:hover {
+        text-decoration: underline;
       }
     </style>
   </head>
@@ -251,7 +331,7 @@
           ></div>
           <div class="doctor-info">
             <h2>Dr. Mohit Chopra</h2>
-           
+
             <div class="status available">Available Now</div>
           </div>
         </div>
@@ -278,7 +358,7 @@
           ></div>
           <div class="doctor-info">
             <h2>Dr. Michael Chen</h2>
-            
+
             <div class="status consultation">In Consultation</div>
           </div>
         </div>
@@ -305,7 +385,7 @@
           ></div>
           <div class="doctor-info">
             <h2>Dr. Priya Patel</h2>
-            
+
             <div class="status break">On Break</div>
           </div>
         </div>
@@ -325,16 +405,27 @@
       </div>
     </div>
 
+    <div class="cleanup-section">
+      <h2>Manage Appointments</h2>
+      <button id="cleanupBtn" class="cleanup-btn">
+        Delete Expired Appointments
+        <span id="expiredCount" class="expired-count">0</span>
+      </button>
+
+      <div class="appointments-list" id="appointmentsList">
+        <!-- Appointments will be displayed here -->
+      </div>
+    </div>
+
     <div class="success-message" id="successMessage">
       Appointment booked successfully!
     </div>
 
     <script>
-      
       let selectedDoctor = null;
       let selectedTime = null;
 
-      
+      // Filter button functionality
       const filterButtons = document.querySelectorAll(".filter-btn");
       filterButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -343,21 +434,21 @@
         });
       });
 
-      
+      // Time slot selection functionality
       document.querySelectorAll(".time-slot").forEach((slot) => {
         slot.addEventListener("click", () => {
           if (!slot.classList.contains("available")) return;
 
-          
+          // Unselect all other time slots in this doctor card
           const doctorCard = slot.closest(".doctor-card");
           doctorCard.querySelectorAll(".time-slot").forEach((s) => {
             s.classList.remove("selected");
           });
 
-          
+          // Select this time slot
           slot.classList.add("selected");
 
-         
+          // Store selected doctor and time
           selectedDoctor =
             doctorCard.querySelector(".doctor-info h2").textContent;
           selectedTime = slot.textContent;
@@ -366,51 +457,278 @@
         });
       });
 
-      
+      // Book appointment functionality
       document.querySelectorAll(".book-btn").forEach((button) => {
         button.addEventListener("click", () => {
           if (selectedDoctor && selectedTime) {
-            
+            // Create appointment object
+            const today = new Date();
+            const [hours, minutes] =
+              selectedTime.split(":").length > 1
+                ? selectedTime.split(":")
+                : [selectedTime, "00"];
+
+            // Create a date object for the appointment time
+            const appointmentDate = new Date();
+            appointmentDate.setHours(parseInt(hours), parseInt(minutes), 0);
+
+            // If the time is already passed today, schedule it for tomorrow
+            if (appointmentDate < today) {
+              appointmentDate.setDate(appointmentDate.getDate() + 1);
+            }
+
             const appointment = {
               doctorName: selectedDoctor,
               time: selectedTime,
-              date: new Date().toLocaleDateString(),
+              date: appointmentDate.toLocaleDateString(),
+              timestamp: appointmentDate.getTime(),
               status: "Upcoming",
             };
 
             let appointments =
               JSON.parse(localStorage.getItem("appointments")) || [];
 
-         
+            // Add new appointment
             appointments.push(appointment);
 
-            
+            // Save to localStorage
             localStorage.setItem("appointments", JSON.stringify(appointments));
 
-            
+            // Show success message
             const successMessage = document.getElementById("successMessage");
             successMessage.style.display = "block";
+            successMessage.textContent = "Appointment booked successfully!";
 
             setTimeout(() => {
               successMessage.style.display = "none";
             }, 3000);
 
-          
+            // Update booked slot
             const selectedSlot = document.querySelector(".time-slot.selected");
             if (selectedSlot) {
               selectedSlot.classList.remove("available", "selected");
               selectedSlot.style.backgroundColor = "#cccccc";
             }
 
-            
+            // Reset selection
             selectedDoctor = null;
             selectedTime = null;
             button.disabled = true;
+
+            // Refresh appointment list display
+            displayAppointments();
           }
         });
       });
 
-      
+      // Function to check for expired appointments
+      function checkExpiredAppointments() {
+        const now = new Date().getTime();
+        let appointments =
+          JSON.parse(localStorage.getItem("appointments")) || [];
+
+        // Count expired appointments
+        const expiredAppointments = appointments.filter((appointment) => {
+          // If timestamp exists, use it; otherwise try to parse from date and time
+          let appointmentTime;
+          if (appointment.timestamp) {
+            appointmentTime = appointment.timestamp;
+          } else {
+            // This handles legacy appointments that might not have a timestamp
+            const [month, day, year] = appointment.date.split("/");
+            const [hours, minutes] = appointment.time.includes(":")
+              ? appointment.time.split(":")
+              : [appointment.time, "00"];
+
+            appointmentTime = new Date(
+              parseInt(year),
+              parseInt(month) - 1,
+              parseInt(day),
+              parseInt(hours),
+              parseInt(minutes)
+            ).getTime();
+          }
+
+          return appointmentTime < now;
+        });
+
+        // Update expired count badge
+        document.getElementById("expiredCount").textContent =
+          expiredAppointments.length;
+
+        return expiredAppointments.length;
+      }
+
+      // Function to delete expired appointments
+      function deleteExpiredAppointments() {
+        const now = new Date().getTime();
+        let appointments =
+          JSON.parse(localStorage.getItem("appointments")) || [];
+
+        // Filter out expired appointments
+        const validAppointments = appointments.filter((appointment) => {
+          // If timestamp exists, use it; otherwise try to parse from date and time
+          let appointmentTime;
+          if (appointment.timestamp) {
+            appointmentTime = appointment.timestamp;
+          } else {
+            // This handles legacy appointments that might not have a timestamp
+            const [month, day, year] = appointment.date.split("/");
+            const [hours, minutes] = appointment.time.includes(":")
+              ? appointment.time.split(":")
+              : [appointment.time, "00"];
+
+            appointmentTime = new Date(
+              parseInt(year),
+              parseInt(month) - 1,
+              parseInt(day),
+              parseInt(hours),
+              parseInt(minutes)
+            ).getTime();
+          }
+
+          return appointmentTime >= now;
+        });
+
+        const deletedCount = appointments.length - validAppointments.length;
+
+        if (deletedCount > 0) {
+          // Save the filtered appointments
+          localStorage.setItem(
+            "appointments",
+            JSON.stringify(validAppointments)
+          );
+
+          // Show success message
+          const successMessage = document.getElementById("successMessage");
+          successMessage.textContent = `${deletedCount} expired appointment(s) deleted!`;
+          successMessage.style.display = "block";
+
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 3000);
+
+          // Refresh the appointments list
+          displayAppointments();
+        } else {
+          // Show message that no expired appointments were found
+          const successMessage = document.getElementById("successMessage");
+          successMessage.textContent = "No expired appointments found.";
+          successMessage.style.display = "block";
+
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 3000);
+        }
+      }
+
+      // Function to display appointments in the list
+      function displayAppointments() {
+        const appointmentsList = document.getElementById("appointmentsList");
+        appointmentsList.innerHTML = ""; // Clear current list
+
+        let appointments =
+          JSON.parse(localStorage.getItem("appointments")) || [];
+        const now = new Date().getTime();
+
+        if (appointments.length === 0) {
+          appointmentsList.innerHTML =
+            '<p style="text-align: center; padding: 15px;">No appointments found.</p>';
+          return;
+        }
+
+        // Sort appointments by date/time
+        appointments.sort((a, b) => {
+          return (a.timestamp || 0) - (b.timestamp || 0);
+        });
+
+        appointments.forEach((appointment) => {
+          const appointmentEl = document.createElement("div");
+          appointmentEl.className = "appointment-item";
+
+          // Check if appointment is expired
+          let appointmentTime;
+          if (appointment.timestamp) {
+            appointmentTime = appointment.timestamp;
+          } else {
+            // Legacy support
+            const [month, day, year] = appointment.date.split("/");
+            const [hours, minutes] = appointment.time.includes(":")
+              ? appointment.time.split(":")
+              : [appointment.time, "00"];
+
+            appointmentTime = new Date(
+              parseInt(year),
+              parseInt(month) - 1,
+              parseInt(day),
+              parseInt(hours),
+              parseInt(minutes)
+            ).getTime();
+          }
+
+          if (appointmentTime < now) {
+            appointmentEl.classList.add("expired");
+          }
+
+          appointmentEl.innerHTML = `
+            <div class="appointment-info">
+              <p><strong>${appointment.doctorName}</strong></p>
+              <p>Date: ${appointment.date}</p>
+              <p>Time: ${appointment.time}</p>
+              <p>Status: ${appointmentTime < now ? "Expired" : "Upcoming"}</p>
+            </div>
+            <div class="appointment-actions">
+              <button class="delete-btn" data-time="${appointmentTime}">Delete</button>
+            </div>
+          `;
+
+          appointmentsList.appendChild(appointmentEl);
+        });
+
+        // Add event listeners to delete buttons
+        document.querySelectorAll(".delete-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            const appointmentTime = this.getAttribute("data-time");
+            deleteSpecificAppointment(appointmentTime);
+          });
+        });
+
+        // Update expired count
+        checkExpiredAppointments();
+      }
+
+      // Function to delete a specific appointment
+      function deleteSpecificAppointment(timestamp) {
+        let appointments =
+          JSON.parse(localStorage.getItem("appointments")) || [];
+
+        // Filter out the specific appointment
+        appointments = appointments.filter((appointment) => {
+          return (appointment.timestamp || 0).toString() !== timestamp;
+        });
+
+        // Save updated appointments
+        localStorage.setItem("appointments", JSON.stringify(appointments));
+
+        // Show success message
+        const successMessage = document.getElementById("successMessage");
+        successMessage.textContent = "Appointment deleted successfully!";
+        successMessage.style.display = "block";
+
+        setTimeout(() => {
+          successMessage.style.display = "none";
+        }, 3000);
+
+        // Refresh the appointments list
+        displayAppointments();
+      }
+
+      // Add event listener to cleanup button
+      document
+        .getElementById("cleanupBtn")
+        .addEventListener("click", deleteExpiredAppointments);
+
+      // Update time display
       function updateTime() {
         const timeElement = document.querySelector(".time");
         const now = new Date();
@@ -420,9 +738,15 @@
         });
       }
 
-     
+      // Initialize
       updateTime();
       setInterval(updateTime, 60000);
+
+      // Initial check and display of appointments
+      displayAppointments();
+
+      // Check for expired appointments periodically
+      setInterval(checkExpiredAppointments, 60000);
     </script>
   </body>
 </html>

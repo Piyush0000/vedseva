@@ -270,6 +270,19 @@
           transform: translateX(100%);
         }
       }
+
+      .login-link {
+        text-align: center;
+        margin-top: 1rem;
+      }
+      .login-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .login-link a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -372,29 +385,62 @@
               type="password"
               id="password"
               required
-              placeholder="Your Password is your 10-digit phone number"
+              placeholder="Create a password (min 6 characters)"
               minlength="6"
             />
             <span class="error-message"
               >Password must be at least 6 characters long</span
             >
           </div>
-          <button type="submit" class="btn">Sign Up</button>
+          <button type="submit" class="btn" id="signupBtn">Sign Up</button>
         </form>
+        <div class="login-link">
+          Already have an account? <a href="main_login.html">Login</a>
+        </div>
       </div>
     </div>
 
     <div class="success-message" id="successMessage">
-      Registration successful! Go to Login Page!
+      Registration successful! Redirecting to login page...
     </div>
 
     <script type="module">
-    
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWUfif-Isr0rnFzYOff9V9Sm9OlkgLsqo",
+        authDomain: "myauthproject-dcbe9.firebaseapp.com",
+        projectId: "myauthproject-dcbe9",
+        storageBucket: "myauthproject-dcbe9.firebasestorage.app",
+        messagingSenderId: "1001012265684",
+        appId: "1:1001012265684:web:965911d48e91196ca4f141",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // Form UI enhancements
       const form = document.getElementById("signupForm");
       const inputs = form.querySelectorAll("input, select");
-      const submitButton = form.querySelector('button[type="submit"]');
+      const submitButton = document.getElementById("signupBtn");
 
-      
+      // Add focus and blur animations
       inputs.forEach((input) => {
         input.addEventListener("focus", () => {
           input.closest(".form-group").style.transform = "translateY(-5px)";
@@ -404,14 +450,14 @@
           input.closest(".form-group").style.transform = "translateY(0)";
         });
 
-       
+        // Show error messages on invalid input
         input.addEventListener("invalid", (e) => {
           e.preventDefault();
           const errorMessage = input.nextElementSibling;
           errorMessage.style.display = "block";
         });
 
-        
+        // Hide error messages when input becomes valid
         input.addEventListener("input", () => {
           const errorMessage = input.nextElementSibling;
           if (input.checkValidity()) {
@@ -420,36 +466,80 @@
         });
       });
 
-  
+      // Handle form submission
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         submitButton.classList.add("loading");
-        submitButton.textContent = "Processing...";
+        submitButton.textContent = "Creating Account...";
+        submitButton.disabled = true;
 
-        
+        // Get form data
+        const userData = {
+          name: document.getElementById("name").value.trim(),
+          age: parseInt(document.getElementById("age").value),
+          gender: document.getElementById("gender").value,
+          aadhar: document.getElementById("aadhar").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          height: parseFloat(document.getElementById("height").value),
+          weight: parseFloat(document.getElementById("weight").value),
+          createdAt: new Date(),
+        };
+
+        const password = document.getElementById("password").value;
+
         try {
-          await new Promise((resolve) => setTimeout(resolve, 1500));
+          // Check if user already exists with this Aadhar
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("aadhar", "==", userData.aadhar));
+          const querySnapshot = await getDocs(q);
 
-          
+          if (!querySnapshot.empty) {
+            throw new Error("A user with this Aadhar number already exists");
+          }
+
+          // Create email from Aadhar (for Firebase Auth)
+          const email = `${userData.aadhar}@vedseva.com`;
+
+          // Create user in Firebase Auth
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          // Store user data in Firestore
+          userData.userId = user.uid;
+          await addDoc(collection(db, "users"), userData);
+
+          // Show success message
           const successMessage = document.getElementById("successMessage");
           successMessage.classList.add("show");
 
-       
+          // Redirect to login page after 3 seconds
           setTimeout(() => {
-            form.reset();
-            submitButton.classList.remove("loading");
-            submitButton.textContent = "Sign Up";
-            successMessage.classList.remove("show");
+            window.location.href = "main_login.html";
           }, 3000);
         } catch (error) {
           console.error("Signup Error:", error);
           submitButton.classList.remove("loading");
           submitButton.textContent = "Sign Up";
-          alert("Signup failed: " + error.message);
+          submitButton.disabled = false;
+
+          // Handle specific Firebase Auth errors
+          if (error.code === "auth/email-already-in-use") {
+            alert("A user with this Aadhar number already exists");
+          } else if (error.code === "auth/invalid-email") {
+            alert("Invalid Aadhar format");
+          } else if (error.code === "auth/weak-password") {
+            alert("Password is too weak. Please use at least 6 characters");
+          } else {
+            alert("Signup failed: " + error.message);
+          }
         }
       });
 
-      // Add input formatting for Aadhar and phone numbers
+      // Format Aadhar and phone inputs to only allow numbers
       const aadharInput = document.getElementById("aadhar");
       const phoneInput = document.getElementById("phone");
 

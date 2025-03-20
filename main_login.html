@@ -194,6 +194,18 @@
         cursor: pointer;
         color: var(--text-secondary);
       }
+      .signup-link {
+        text-align: center;
+        margin-top: 1rem;
+      }
+      .signup-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .signup-link a:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -219,28 +231,35 @@
             />
           </div>
           <div class="form-group">
-            <label for="phone">Password</label>
-            <div style="position: relative; display: flex; align-items: center;">
+            <label for="password">Password</label>
+            <div style="position: relative; display: flex; align-items: center">
               <input
                 type="password"
-                id="phone"
-                pattern="[0-9]{10}"
-                maxlength="10"
-                placeholder="Enter Phone Number"
+                id="password"
+                placeholder="Enter Password"
                 required
-                style="padding-right: 30px;"
+                style="padding-right: 30px"
               />
               <button
                 type="button"
                 onclick="togglePassword()"
-                style="position: absolute; right: 5px; background: none; border: none; cursor: pointer;"
+                style="
+                  position: absolute;
+                  right: 5px;
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                "
               >
                 👁️
               </button>
             </div>
           </div>
-          <button type="submit" class="btn">Login</button>
+          <button type="submit" class="btn" id="loginBtn">Login</button>
         </form>
+        <div class="signup-link">
+          Don't have an account? <a href="sign_up.html">Sign Up</a>
+        </div>
         <div class="test-credentials">
           <div>For Testing use the credentials written below:</div>
           <div class="credentials-text">Username: 112233445566</div>
@@ -251,7 +270,7 @@
 
     <script>
       function togglePassword() {
-        let input = document.getElementById("phone");
+        let input = document.getElementById("password");
         if (input.type === "password") {
           input.type = "text";
         } else {
@@ -261,50 +280,35 @@
     </script>
 
     <script type="module">
-   
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
       import {
         getAuth,
         signInWithEmailAndPassword,
-      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+      } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
       import {
         getFirestore,
         collection,
         query,
         where,
         getDocs,
-      } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+      } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-  
+      // Your web app's Firebase configuration
       const firebaseConfig = {
-        apiKey: "AIzaSyD-18K-6BnKOxc1CDhkQAv5dWIEwOFT-go",
-        authDomain: "vedseva-5e40f.firebaseapp.com",
-        projectId: "vedseva-5e40f",
-        storageBucket: "vedseva-5e40f.appspot.com",
-        messagingSenderId: "28374532477",
-        appId: "1:28374532477:web:c5076c500cebaa4b630c14",
+        apiKey: "AIzaSyBWUfif-Isr0rnFzYOff9V9Sm9OlkgLsqo",
+        authDomain: "myauthproject-dcbe9.firebaseapp.com",
+        projectId: "myauthproject-dcbe9",
+        storageBucket: "myauthproject-dcbe9.firebasestorage.app",
+        messagingSenderId: "1001012265684",
+        appId: "1:1001012265684:web:965911d48e91196ca4f141",
       };
 
-     
+      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-   
-      const displayUserData = (userData) => {
-        const userInfo = document.getElementById("userInfo");
-        userInfo.innerHTML = `
-    <div class="user-info"><strong>Name:</strong> ${userData.name}</div>
-    <div class="user-info"><strong>Age:</strong> ${userData.age}</div>
-    <div class="user-info"><strong>Gender:</strong> ${userData.gender}</div>
-    <div class="user-info"><strong>Phone:</strong> ${userData.phone}</div>
-    <div class="user-info"><strong>Height:</strong> ${userData.height} cm</div>
-    <div class="user-info"><strong>Weight:</strong> ${userData.weight} kg</div>
-  `;
-        document.getElementById("userDetails").style.display = "block";
-      };
-
- 
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
@@ -312,33 +316,54 @@
 
           const aadhar = document.getElementById("aadhar").value.trim();
           const password = document.getElementById("password").value;
+          const loginBtn = document.getElementById("loginBtn");
+
+          // Change button text to show loading
+          loginBtn.textContent = "Logging in...";
+          loginBtn.disabled = true;
 
           try {
-           
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, where("aadhar", "==", aadhar));
-            const querySnapshot = await getDocs(q);
+            // Create an email format from Aadhar number (for Firebase Auth)
+            const email = `${aadhar}@vedseva.com`;
 
-            if (querySnapshot.empty) {
-              alert("No user found with this Aadhar number");
-              return;
-            }
-
-            const userData = querySnapshot.docs[0].data();
-
-           
-            await signInWithEmailAndPassword(
+            // Sign in with Firebase Auth
+            const userCredential = await signInWithEmailAndPassword(
               auth,
-              `${aadhar}@vedseva.com`,
+              email,
               password
             );
+            const user = userCredential.user;
 
-         
-            displayUserData(userData);
-            alert("✅ Login successful!");
+            // If login is successful, try to get user data from Firestore
+            try {
+              const usersRef = collection(db, "users");
+              const q = query(usersRef, where("aadhar", "==", aadhar));
+              const querySnapshot = await getDocs(q);
+
+              if (!querySnapshot.empty) {
+                // User data found in Firestore
+                const userData = querySnapshot.docs[0].data();
+                console.log("User data:", userData);
+
+                // Store user data in localStorage for use in other pages
+                localStorage.setItem("userData", JSON.stringify(userData));
+              }
+
+              // Alert success and redirect to cards page
+              alert("✅ Login successful!");
+              window.location.href = "cards.html";
+            } catch (firestoreError) {
+              console.error("Firestore error:", firestoreError);
+              // Still proceed with login even if Firestore fails
+              alert("✅ Login successful!");
+              window.location.href = "cards.html";
+            }
           } catch (error) {
             console.error("Login error:", error);
+            loginBtn.textContent = "Login";
+            loginBtn.disabled = false;
 
+            // Handle specific Firebase Auth errors
             if (error.code === "auth/invalid-email") {
               alert("Invalid Aadhar format");
             } else if (error.code === "auth/user-not-found") {
@@ -348,22 +373,22 @@
             } else {
               alert(`Login error: ${error.message}`);
             }
+
+            // Add shake animation to the form
+            document.querySelector(".login-container").classList.add("shake");
+            setTimeout(() => {
+              document
+                .querySelector(".login-container")
+                .classList.remove("shake");
+            }, 500);
           }
         });
 
-   
+      // Format Aadhar input to only allow numbers
       const aadharInput = document.getElementById("aadhar");
       aadharInput.addEventListener("input", (e) => {
-        e.target.value = e.target.value.replace(/\D/g, ""); 
+        e.target.value = e.target.value.replace(/\D/g, "");
       });
-
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          alert("✅ Login successful!");
-          window.location.href = "cards.html";
-        });
     </script>
   </body>
 </html>

@@ -134,7 +134,7 @@
         padding: 2rem;
       }
 
-      .video-placeholder {
+      .video-container {
         width: 100%;
         height: 300px;
         background-color: #1e293b;
@@ -145,6 +145,43 @@
         justify-content: center;
         color: white;
         font-size: 1.2rem;
+        position: relative;
+      }
+
+      .video-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+      }
+
+      .user-video {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 120px;
+        height: 90px;
+        border-radius: 0.5rem;
+        background-color: #64748b;
+        overflow: hidden;
+        z-index: 2;
+      }
+
+      .remote-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        z-index: 0;
+        display: none;
       }
 
       .call-controls {
@@ -177,6 +214,17 @@
         background-color: #b91c1c;
       }
 
+      .expired-appointment {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+      }
+
       @media (max-width: 768px) {
         .cards-grid {
           grid-template-columns: 1fr;
@@ -195,22 +243,28 @@
       <div class="cards-grid">
         <div class="card">
           <div class="card-header black-header">APPOINTMENTS</div>
-          <div class="card-content" id="appointmentsContainer"></div>
+          <div class="card-content" id="appointmentsContainer">
+            <div class="empty-state">Loading appointments...</div>
+          </div>
         </div>
         <div class="card">
           <div class="card-header blue-header">START A CALL</div>
           <div class="card-content">
             <div class="video-interface">
-              <div class="video-placeholder" id="videoPlaceholder">
-                Click on an appointment to start your call
+              <div class="video-container">
+                <div class="video-placeholder" id="videoPlaceholder">
+                  Click on an appointment to start your call
+                </div>
+                <video id="remoteVideo" class="remote-video" autoplay></video>
+                <video id="userVideo" class="user-video" autoplay muted></video>
               </div>
               <div
                 class="call-controls"
                 style="display: none"
                 id="callControls"
               >
-                <button class="control-button">🎤</button>
-                <button class="control-button">📹</button>
+                <button class="control-button" id="muteButton">🎤</button>
+                <button class="control-button" id="videoButton">📹</button>
                 <button class="control-button end-call" onclick="endCall()">
                   📞
                 </button>
@@ -225,25 +279,78 @@
         const appointmentsContainer = document.getElementById(
           "appointmentsContainer"
         );
+        const videoPlaceholder = document.getElementById("videoPlaceholder");
+        const callControls = document.getElementById("callControls");
+        const userVideo = document.getElementById("userVideo");
+        const remoteVideo = document.getElementById("remoteVideo");
+        const muteButton = document.getElementById("muteButton");
+        const videoButton = document.getElementById("videoButton");
+
+        let userStream = null;
+        let isAudioMuted = false;
+        let isVideoOff = false;
+
+        // Check and clean expired appointments on page load
+        cleanExpiredAppointments();
+
+        // Setup interval to check for expired appointments every minute
+        setInterval(cleanExpiredAppointments, 60000);
+
+        // Function to check and remove expired appointments
+        function cleanExpiredAppointments() {
+          const savedAppointments =
+            JSON.parse(localStorage.getItem("appointments")) || [];
+          const currentTime = new Date();
+
+          const updatedAppointments = savedAppointments.filter(
+            (appointment) => {
+              const appointmentDateTime = new Date(
+                appointment.date + " " + appointment.time
+              );
+              return appointmentDateTime > currentTime;
+            }
+          );
+
+          // Save the filtered appointments back to localStorage
+          localStorage.setItem(
+            "appointments",
+            JSON.stringify(updatedAppointments)
+          );
+
+          // Reload the appointments display
+          loadAppointments();
+        }
 
         function loadAppointments() {
           const savedAppointments =
             JSON.parse(localStorage.getItem("appointments")) || [];
+          appointmentsContainer.innerHTML = "";
 
           if (savedAppointments.length === 0) {
             appointmentsContainer.innerHTML =
-              "<p>No appointments scheduled.</p>";
+              '<div class="empty-state">No appointments scheduled.</div>';
             return;
           }
+
+          // Sort appointments by date and time
+          savedAppointments.sort((a, b) => {
+            const dateA = new Date(a.date + " " + a.time);
+            const dateB = new Date(b.date + " " + b.time);
+            return dateA - dateB;
+          });
 
           savedAppointments.forEach((appointment, index) => {
             const appointmentCard = document.createElement("div");
             appointmentCard.classList.add("appointment-card");
+
+            // Format the date for display
+            const displayDate = formatDate(appointment.date);
+
             appointmentCard.innerHTML = `
-          <div class="appointment-time">${appointment.time} - ${appointment.date}</div>
-          <div class="appointment-details">Doctor: ${appointment.doctorName}</div>
-          <div class="appointment-status">${appointment.status}</div>
-        `;
+              <div class="appointment-time">${appointment.time} - ${displayDate}</div>
+              <div class="appointment-details">Doctor: ${appointment.doctorName}</div>
+              <div class="appointment-status">${appointment.status}</div>
+            `;
 
             appointmentCard.addEventListener("click", function () {
               startCall(appointment);
@@ -253,22 +360,95 @@
           });
         }
 
-        function startCall(appointment) {
-          document.getElementById(
-            "videoPlaceholder"
-          ).innerText = `Calling Dr. ${appointment.doctorName}...`;
-          document.getElementById("callControls").style.display = "flex";
+        function formatDate(dateStr) {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          });
+        }
+
+        async function startCall(appointment) {
+          videoPlaceholder.innerText = `Calling Dr. ${appointment.doctorName}...`;
+          callControls.style.display = "flex";
+
+          try {
+            // Request user media
+            userStream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: true,
+            });
+
+            // Display user's video
+            userVideo.srcObject = userStream;
+
+            // In a real app, you would connect to the doctor here
+            // For demo purposes, we'll just show a mock connection after 2 seconds
+            setTimeout(() => {
+              videoPlaceholder.style.display = "none";
+              remoteVideo.style.display = "block";
+              // Mock remote video with a color
+              remoteVideo.style.backgroundColor = "#0f172a";
+            }, 2000);
+          } catch (err) {
+            console.error("Error accessing media devices:", err);
+            videoPlaceholder.innerText = "Could not access camera/microphone";
+          }
         }
 
         function endCall() {
-          document.getElementById("videoPlaceholder").innerText =
+          videoPlaceholder.innerText =
             "Click on an appointment to start your call";
-          document.getElementById("callControls").style.display = "none";
+          videoPlaceholder.style.display = "flex";
+          callControls.style.display = "none";
+          remoteVideo.style.display = "none";
+
+          // Stop all media tracks
+          if (userStream) {
+            userStream.getTracks().forEach((track) => track.stop());
+            userStream = null;
+          }
+
+          // Reset video elements
+          userVideo.srcObject = null;
+          remoteVideo.srcObject = null;
+
+          // Reset button states
+          isAudioMuted = false;
+          isVideoOff = false;
+          muteButton.innerText = "🎤";
+          videoButton.innerText = "📹";
         }
 
-        window.endCall = endCall; 
+        // Mute/unmute audio
+        muteButton.addEventListener("click", function () {
+          if (!userStream) return;
 
-        loadAppointments(); 
+          isAudioMuted = !isAudioMuted;
+          userStream.getAudioTracks().forEach((track) => {
+            track.enabled = !isAudioMuted;
+          });
+
+          muteButton.innerText = isAudioMuted ? "🔇" : "🎤";
+        });
+
+        // Turn video on/off
+        videoButton.addEventListener("click", function () {
+          if (!userStream) return;
+
+          isVideoOff = !isVideoOff;
+          userStream.getVideoTracks().forEach((track) => {
+            track.enabled = !isVideoOff;
+          });
+
+          videoButton.innerText = isVideoOff ? "🚫" : "📹";
+        });
+
+        window.endCall = endCall;
+
+        // Load appointments on page load
+        loadAppointments();
       });
     </script>
   </body>
