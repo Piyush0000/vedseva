@@ -48,6 +48,7 @@
             padding: 20px;
             font-size: 1.2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
         }
         
         .menu-item.active {
@@ -61,7 +62,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-           
+            cursor: pointer;
         }
         .sign-out i{
             margin-left: 10px;
@@ -219,7 +220,7 @@
                 <img src="doc1.jpg" alt="Doctor's profile picture">
             </div>
         </div>
-        <div class="menu-item active">Appointments</div>
+        <div class="menu-item active" id="appointments-menu">Appointments</div>
         <div class="sign-out">Sign out <i class="fa-solid fa-right-from-bracket"></i></div>
     </div>
     
@@ -368,7 +369,12 @@
             saveButton.addEventListener('click', saveChanges);
             cancelButton.addEventListener('click', cancelChanges);
             
-            // Add click events for menu items
+            // Add event listener for Appointments menu item to navigate to doc_appointments.html
+            document.getElementById('appointments-menu').addEventListener('click', function() {
+                window.location.href = 'doc_appointments.html';
+            });
+            
+            // Add click events for menu items (for styling active state)
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
                 item.addEventListener('click', function() {
