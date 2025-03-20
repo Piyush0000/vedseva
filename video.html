@@ -24,6 +24,7 @@
         --nav-bg: #e0f2fe;
         --black: #000000;
         --royal-blue: #1e40af;
+        --red: #dc2626;
       }
 
       body {
@@ -108,10 +109,19 @@
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1);
       }
 
+      .past-appointment {
+        border-left: 4px solid var(--red);
+        opacity: 0.7;
+      }
+
       .appointment-time {
         font-weight: bold;
         color: var(--text-primary);
         margin-bottom: 0.5rem;
+      }
+
+      .past-time {
+        color: var(--red);
       }
 
       .appointment-details {
@@ -127,6 +137,10 @@
         font-size: 0.8rem;
         color: white;
         background-color: var(--accent);
+      }
+
+      .past-status {
+        background-color: var(--red);
       }
 
       .video-interface {
@@ -290,36 +304,11 @@
         let isAudioMuted = false;
         let isVideoOff = false;
 
-        // Check and clean expired appointments on page load
-        cleanExpiredAppointments();
+        // Load appointments on page load
+        loadAppointments();
 
         // Setup interval to check for expired appointments every minute
-        setInterval(cleanExpiredAppointments, 60000);
-
-        // Function to check and remove expired appointments
-        function cleanExpiredAppointments() {
-          const savedAppointments =
-            JSON.parse(localStorage.getItem("appointments")) || [];
-          const currentTime = new Date();
-
-          const updatedAppointments = savedAppointments.filter(
-            (appointment) => {
-              const appointmentDateTime = new Date(
-                appointment.date + " " + appointment.time
-              );
-              return appointmentDateTime > currentTime;
-            }
-          );
-
-          // Save the filtered appointments back to localStorage
-          localStorage.setItem(
-            "appointments",
-            JSON.stringify(updatedAppointments)
-          );
-
-          // Reload the appointments display
-          loadAppointments();
-        }
+        setInterval(loadAppointments, 60000);
 
         function loadAppointments() {
           const savedAppointments =
@@ -332,32 +321,87 @@
             return;
           }
 
-          // Sort appointments by date and time
-          savedAppointments.sort((a, b) => {
+          const currentTime = new Date();
+          const upcomingAppointments = [];
+          const pastAppointments = [];
+
+          // Sort appointments into upcoming and past
+          savedAppointments.forEach((appointment) => {
+            const appointmentDateTime = new Date(
+              appointment.date + " " + appointment.time
+            );
+
+            if (appointmentDateTime > currentTime) {
+              upcomingAppointments.push(appointment);
+            } else {
+              pastAppointments.push(appointment);
+            }
+          });
+
+          // Sort upcoming appointments by date and time
+          upcomingAppointments.sort((a, b) => {
             const dateA = new Date(a.date + " " + a.time);
             const dateB = new Date(b.date + " " + b.time);
             return dateA - dateB;
           });
 
-          savedAppointments.forEach((appointment, index) => {
-            const appointmentCard = document.createElement("div");
-            appointmentCard.classList.add("appointment-card");
+          // Sort past appointments by date and time (most recent first)
+          pastAppointments.sort((a, b) => {
+            const dateA = new Date(a.date + " " + a.time);
+            const dateB = new Date(b.date + " " + b.time);
+            return dateB - dateA;
+          });
 
-            // Format the date for display
-            const displayDate = formatDate(appointment.date);
+          // Display upcoming appointments first
+          upcomingAppointments.forEach((appointment) => {
+            createAppointmentCard(appointment, false);
+          });
 
-            appointmentCard.innerHTML = `
-              <div class="appointment-time">${appointment.time} - ${displayDate}</div>
-              <div class="appointment-details">Doctor: ${appointment.doctorName}</div>
-              <div class="appointment-status">${appointment.status}</div>
-            `;
+          // Display past appointments
+          pastAppointments.forEach((appointment) => {
+            createAppointmentCard(appointment, true);
+          });
 
+          // Save updated list (without expired appointments) back to localStorage
+          localStorage.setItem(
+            "appointments",
+            JSON.stringify([...upcomingAppointments, ...pastAppointments])
+          );
+        }
+
+        function createAppointmentCard(appointment, isPast) {
+          const appointmentCard = document.createElement("div");
+          appointmentCard.classList.add("appointment-card");
+
+          if (isPast) {
+            appointmentCard.classList.add("past-appointment");
+          }
+
+          // Format the date for display
+          const displayDate = formatDate(appointment.date);
+          const timeClass = isPast
+            ? "appointment-time past-time"
+            : "appointment-time";
+          const statusClass = isPast
+            ? "appointment-status past-status"
+            : "appointment-status";
+          const statusText = isPast
+            ? "Past appointment"
+            : appointment.status || "Upcoming";
+
+          appointmentCard.innerHTML = `
+            <div class="${timeClass}">${appointment.time} - ${displayDate}</div>
+            <div class="appointment-details">Doctor: ${appointment.doctorName}</div>
+            <div class="${statusClass}">${statusText}</div>
+          `;
+
+          if (!isPast) {
             appointmentCard.addEventListener("click", function () {
               startCall(appointment);
             });
+          }
 
-            appointmentsContainer.appendChild(appointmentCard);
-          });
+          appointmentsContainer.appendChild(appointmentCard);
         }
 
         function formatDate(dateStr) {
@@ -446,9 +490,6 @@
         });
 
         window.endCall = endCall;
-
-        // Load appointments on page load
-        loadAppointments();
       });
     </script>
   </body>

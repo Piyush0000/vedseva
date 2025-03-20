@@ -80,32 +80,16 @@
         right: 10px;
         width: 150px;
       }
-      .no-user-message {
-        text-align: center;
-        color: red;
-        margin: 20px 0;
-        font-weight: bold;
-      }
-      .back-button {
-        background-color: #555;
-        color: white;
-      }
     </style>
   </head>
   <body>
     <div class="button-container">
-      <button
-        class="button back-button"
-        onclick="window.location.href='cards.html'"
-      >
-        BACK
-      </button>
       <button class="button print" onclick="window.print()">PRINT</button>
-      <a href="test_lab.html">
-        <button class="button more-info" id="extra">More info</button>
-      </a>
+      <a href="test_lab.html"
+        ><button class="button more-info" id="extra">More info</button></a
+      >
     </div>
-    <div class="container" id="prescription-container">
+    <div class="container">
       <div class="header">
         Dr. MOHIT CHOPRA, MD<br />17/10 Old Rajendra Nagar-110060<br />Phone no:
         +91-XXXXXXXXXX
@@ -113,12 +97,12 @@
 
       <div class="section">
         <h3>Patient Information</h3>
-        <div class="box">
-          <div class="info" id="patient-info">
-            <!-- Patient information will be populated here -->
+        <div class="box" id="patient-info">
+          <div class="info" id="patient-basic-info">
+            Name: Loading... | Age: -- | Height: -- cm
           </div>
-          <div class="info" id="patient-details">
-            <!-- Additional patient details will be populated here -->
+          <div class="info" id="patient-medical-info">
+            Blood Group: -- | Gender: -- | Weight: -- kg
           </div>
           <div class="info" id="date-info"></div>
         </div>
@@ -161,87 +145,65 @@
     </div>
 
     <script>
-      // Set the current date
+      // Get current date
       const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleDateString("en-US");
+      const formattedDate = currentDate.toLocaleDateString("en-US"); // Format: MM/DD/YYYY
       document.getElementById("date-info").innerHTML = `Date: ${formattedDate}`;
 
-      // Check if user data exists in localStorage
+      // Load and display user data from localStorage
       document.addEventListener("DOMContentLoaded", function () {
+        // Try to get user data from localStorage
         const userDataString = localStorage.getItem("userData");
 
         if (userDataString) {
           try {
+            // Parse the user data from localStorage
             const userData = JSON.parse(userDataString);
 
             // Update patient information with user data
-            let patientInfoHTML = "";
-            let patientDetailsHTML = "";
+            const basicInfoElement =
+              document.getElementById("patient-basic-info");
+            const medicalInfoElement = document.getElementById(
+              "patient-medical-info"
+            );
 
-            // Check if required fields exist in userData
-            if (userData.name && userData.age) {
-              patientInfoHTML = `Name: ${userData.name} | Age: ${userData.age}`;
+            // Check if the required user data exists and populate accordingly
+            if (userData) {
+              // Clean name data - if name is "piyush19", display only "piyush"
+              let name = userData.name || "Unknown";
 
-              if (userData.height) {
-                patientInfoHTML += ` | Height: ${userData.height} cm`;
-              }
+              // Remove any numeric suffixes from the name
+              // This will handle cases like "piyush19" and keep only "piyush"
+              name = name.replace(/\d+$/, "").trim();
 
-              // Add blood group, gender, and weight if available
-              if (userData.bloodGroup || userData.gender || userData.weight) {
-                patientDetailsHTML = `Blood Group: ${
-                  userData.bloodGroup || "Not provided"
-                } | Gender: ${userData.gender || "Not provided"}`;
+              const age = userData.age || "--";
+              const height = userData.height || "--";
+              basicInfoElement.textContent = `Name: ${name} | Age: ${age} | Height: ${height} cm`;
 
-                if (userData.weight) {
-                  patientDetailsHTML += ` | Weight: ${userData.weight} kg`;
-                }
-              }
+              // Update medical info
+              const bloodGroup = userData.bloodGroup || "--";
+              const gender = userData.gender || "--";
+              const weight = userData.weight || "--";
+              medicalInfoElement.textContent = `Blood Group: ${bloodGroup} | Gender: ${gender} | Weight: ${weight} kg`;
 
-              // Update the HTML elements
-              document.getElementById("patient-info").innerHTML =
-                patientInfoHTML;
-              document.getElementById("patient-details").innerHTML =
-                patientDetailsHTML;
-            } else {
-              // If name or age is missing, show a fallback message
-              document.getElementById(
-                "patient-info"
-              ).innerHTML = `User data incomplete. Please update your profile.`;
+              // Log the processed data for debugging
+              console.log("Processed user data:", {
+                original: userData.name,
+                cleaned: name,
+                age,
+                height,
+                bloodGroup,
+                gender,
+                weight,
+              });
             }
           } catch (error) {
-            console.error("Error parsing user data from localStorage:", error);
-            showNoUserMessage("Error loading user data. Please log in again.");
+            console.error("Error parsing user data:", error);
           }
         } else {
-          // If no user data exists, show a message
-          showNoUserMessage("No user data found. Please log in first.");
+          console.log("No user data found in localStorage");
         }
       });
-
-      // Function to show a message when no user is logged in
-      function showNoUserMessage(message) {
-        const container = document.getElementById("prescription-container");
-
-        // Create a new div for the message
-        const messageDiv = document.createElement("div");
-        messageDiv.className = "no-user-message";
-        messageDiv.textContent = message;
-
-        // Add a button to redirect to login
-        const loginButton = document.createElement("button");
-        loginButton.textContent = "Go to Login";
-        loginButton.className = "button";
-        loginButton.style.marginTop = "10px";
-        loginButton.onclick = function () {
-          window.location.href = "main_login.html";
-        };
-
-        messageDiv.appendChild(document.createElement("br"));
-        messageDiv.appendChild(loginButton);
-
-        // Insert the message at the beginning of the container
-        container.insertBefore(messageDiv, container.firstChild);
-      }
     </script>
   </body>
 </html>
