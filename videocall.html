@@ -234,7 +234,7 @@
         if (currentAppointment) {
           // Display appointment details
           const displayDate = formatDate(currentAppointment.date);
-          appointmentDetails.innerText = `Dr. ${currentAppointment.doctorName} - ${currentAppointment.time}, ${displayDate}`;
+          appointmentDetails.innerText = ` ${currentAppointment.doctorName} - ${currentAppointment.time}, ${displayDate}`;
 
           // Start the call automatically
           startCall(currentAppointment);
@@ -254,7 +254,7 @@
       }
 
       async function startCall(appointment) {
-        videoPlaceholder.innerText = `Connecting to Dr. ${appointment.doctorName}...`;
+        videoPlaceholder.innerText = `Connecting to  ${appointment.doctorName}...`;
 
         try {
           // Request user media
