@@ -174,60 +174,6 @@
         z-index: 1;
       }
 
-      .user-video {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        width: 120px;
-        height: 90px;
-        border-radius: 0.5rem;
-        background-color: #64748b;
-        overflow: hidden;
-        z-index: 2;
-      }
-
-      .remote-video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        z-index: 0;
-        display: none;
-      }
-
-      .call-controls {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-
-      .control-button {
-        padding: 1rem;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background-color: var(--primary);
-        color: white;
-      }
-
-      .control-button:hover {
-        transform: scale(1.1);
-        background-color: var(--primary-dark);
-      }
-
-      .end-call {
-        background-color: #dc2626;
-      }
-
-      .end-call:hover {
-        background-color: #b91c1c;
-      }
-
       .expired-appointment {
         opacity: 0.5;
         pointer-events: none;
@@ -269,19 +215,6 @@
                 <div class="video-placeholder" id="videoPlaceholder">
                   Click on an appointment to start your call
                 </div>
-                <video id="remoteVideo" class="remote-video" autoplay></video>
-                <video id="userVideo" class="user-video" autoplay muted></video>
-              </div>
-              <div
-                class="call-controls"
-                style="display: none"
-                id="callControls"
-              >
-                <button class="control-button" id="muteButton">🎤</button>
-                <button class="control-button" id="videoButton">📹</button>
-                <button class="control-button end-call" onclick="endCall()">
-                  📞
-                </button>
               </div>
             </div>
           </div>
@@ -294,15 +227,6 @@
           "appointmentsContainer"
         );
         const videoPlaceholder = document.getElementById("videoPlaceholder");
-        const callControls = document.getElementById("callControls");
-        const userVideo = document.getElementById("userVideo");
-        const remoteVideo = document.getElementById("remoteVideo");
-        const muteButton = document.getElementById("muteButton");
-        const videoButton = document.getElementById("videoButton");
-
-        let userStream = null;
-        let isAudioMuted = false;
-        let isVideoOff = false;
 
         // Load appointments on page load
         loadAppointments();
@@ -397,7 +321,7 @@
 
           if (!isPast) {
             appointmentCard.addEventListener("click", function () {
-              startCall(appointment);
+              redirectToVideoCall(appointment);
             });
           }
 
@@ -413,83 +337,21 @@
           });
         }
 
-        async function startCall(appointment) {
-          videoPlaceholder.innerText = `Calling Dr. ${appointment.doctorName}...`;
-          callControls.style.display = "flex";
+        function redirectToVideoCall(appointment) {
+          // Store appointment data in localStorage to pass to video call page
+          localStorage.setItem(
+            "currentAppointment",
+            JSON.stringify(appointment)
+          );
 
-          try {
-            // Request user media
-            userStream = await navigator.mediaDevices.getUserMedia({
-              video: true,
-              audio: true,
-            });
+          // Redirect to video call page
+          videoPlaceholder.innerText = `Redirecting to video call with Dr. ${appointment.doctorName}...`;
 
-            // Display user's video
-            userVideo.srcObject = userStream;
-
-            // In a real app, you would connect to the doctor here
-            // For demo purposes, we'll just show a mock connection after 2 seconds
-            setTimeout(() => {
-              videoPlaceholder.style.display = "none";
-              remoteVideo.style.display = "block";
-              // Mock remote video with a color
-              remoteVideo.style.backgroundColor = "#0f172a";
-            }, 2000);
-          } catch (err) {
-            console.error("Error accessing media devices:", err);
-            videoPlaceholder.innerText = "Could not access camera/microphone";
-          }
+          // Redirect after a short delay to show the message
+          setTimeout(() => {
+            window.location.href = "videocall.html";
+          }, 1000);
         }
-
-        function endCall() {
-          videoPlaceholder.innerText =
-            "Click on an appointment to start your call";
-          videoPlaceholder.style.display = "flex";
-          callControls.style.display = "none";
-          remoteVideo.style.display = "none";
-
-          // Stop all media tracks
-          if (userStream) {
-            userStream.getTracks().forEach((track) => track.stop());
-            userStream = null;
-          }
-
-          // Reset video elements
-          userVideo.srcObject = null;
-          remoteVideo.srcObject = null;
-
-          // Reset button states
-          isAudioMuted = false;
-          isVideoOff = false;
-          muteButton.innerText = "🎤";
-          videoButton.innerText = "📹";
-        }
-
-        // Mute/unmute audio
-        muteButton.addEventListener("click", function () {
-          if (!userStream) return;
-
-          isAudioMuted = !isAudioMuted;
-          userStream.getAudioTracks().forEach((track) => {
-            track.enabled = !isAudioMuted;
-          });
-
-          muteButton.innerText = isAudioMuted ? "🔇" : "🎤";
-        });
-
-        // Turn video on/off
-        videoButton.addEventListener("click", function () {
-          if (!userStream) return;
-
-          isVideoOff = !isVideoOff;
-          userStream.getVideoTracks().forEach((track) => {
-            track.enabled = !isVideoOff;
-          });
-
-          videoButton.innerText = isVideoOff ? "🚫" : "📹";
-        });
-
-        window.endCall = endCall;
       });
     </script>
   </body>

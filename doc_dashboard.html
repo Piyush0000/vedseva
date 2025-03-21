@@ -1,395 +1,436 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <title>Doctor's Profile</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        
-        body {
-            display: flex;
-            height: 100vh;
-        }
-        
-        .sidebar {
-            width: 225px;
-            background-color: #1B2A41;
-            color: white;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .profile-pic-container {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .profile-pic {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-        
-        .profile-pic img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .menu-item {
-            padding: 20px;
-            font-size: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-        
-        .menu-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .sign-out {
-            margin-top: auto;
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-        .sign-out i{
-            margin-left: 10px;
-        }
-        
-        .main-content {
-            flex: 1;
-            background-color: #EBF2FA;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .profile-card {
-            background-color: white;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-title {
-            color: #2D6CC0;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .card-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .metrics-container {
-            flex: 1;
-            min-width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .info-box {
-            background-color: #F8F9FA;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        
-        .info-title {
-            font-size: 1.1rem;
-            font-weight: normal;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .info-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-align: center;
-            color: #2D6CC0;
-        }
-        
-        .personal-info {
-            flex: 1;
-            min-width: 300px;
-            background-color: #F8F9FA;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        
-        .personal-info-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #1B2A41;
-        }
-        
-        .personal-info-detail {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        
-        .address {
-            text-align: center;
-            margin-top: 25px;
-            font-weight: bold;
-        }
-        
-        .edit-button {
-            display: block;
-            margin-left: auto;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #2D6CC0;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        
-        .save-button {
-            display: none;
-            margin-left: auto;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        
-        .cancel-button {
-            display: none;
-            margin-right: 10px;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .editable {
-            display: none;
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-            margin-bottom: 15px;
-        }
-        
-        .editable-address {
-            text-align: center;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 225px;
+        background-color: #1b2a41;
+        color: white;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .profile-pic-container {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .profile-pic {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+
+      .profile-pic img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .menu-item {
+        padding: 20px;
+        font-size: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+      }
+
+      .menu-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .sign-out {
+        margin-top: auto;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+      .sign-out i {
+        margin-left: 10px;
+      }
+
+      .main-content {
+        flex: 1;
+        background-color: #ebf2fa;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .profile-card {
+        background-color: white;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 800px;
+        padding: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        color: #2d6cc0;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .card-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .metrics-container {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .info-box {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .info-title {
+        font-size: 1.1rem;
+        font-weight: normal;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .info-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-align: center;
+        color: #2d6cc0;
+      }
+
+      .personal-info {
+        flex: 1;
+        min-width: 300px;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .personal-info-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #1b2a41;
+      }
+
+      .personal-info-detail {
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+      }
+
+      .address {
+        text-align: center;
+        margin-top: 25px;
+        font-weight: bold;
+      }
+
+      .edit-button {
+        display: block;
+        margin-left: auto;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #2d6cc0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .save-button {
+        display: none;
+        margin-left: auto;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .cancel-button {
+        display: none;
+        margin-right: 10px;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .editable {
+        display: none;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+      }
+
+      .editable-address {
+        text-align: center;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="sidebar">
-        <div class="profile-pic-container">
-            <div class="profile-pic">
-                <img src="doc1.jpg" alt="Doctor's profile picture">
-            </div>
+      <div class="profile-pic-container">
+        <div class="profile-pic">
+          <img src="doc1.jpg" alt="Doctor's profile picture" />
         </div>
-        <div class="menu-item active" id="appointments-menu">Appointments</div>
-        <div class="sign-out">Sign out <i class="fa-solid fa-right-from-bracket"></i></div>
+      </div>
+      <div class="menu-item active" id="appointments-menu">Appointments</div>
+      <div class="sign-out">
+        Sign out <i class="fa-solid fa-right-from-bracket"></i>
+      </div>
     </div>
-    
+
     <div class="main-content">
-        <div class="profile-card">
-            <h1 class="card-title">Doctor's Profile</h1>
-            
-            <div class="card-content">
-                <div class="metrics-container">
-                    <div class="info-box">
-                        <div class="info-title">Total Number of Consultations:</div>
-                        <div class="info-value">501</div>
-                    </div>
-                    
-                    <div class="info-box">
-                        <div class="info-title">Total Work Experience:</div>
-                        <div class="info-value">5 years</div>
-                    </div>
-                </div>
-                
-                <div class="personal-info">
-                    <div class="personal-info-title">Personal Information</div>
-                    
-                    <div class="personal-info-detail" id="name-display">Name: Dr Mohit Chopra, (MD in General Medicine)</div>
-                    <input type="text" class="editable" id="name-edit" value="Dr Mohit Chopra, (MD in General Medicine)">
-                    
-                    <div class="personal-info-detail" id="age-display">Age: 33 years</div>
-                    <input type="text" class="editable" id="age-edit" value="33 years">
-                    
-                    <div class="personal-info-detail" id="phone-display">Phone: +91-XXXXXXXXXX</div>
-                    <input type="text" class="editable" id="phone-edit" value="+91-XXXXXXXXXX">
-                    
-                    <div class="address" id="address-display">17/10 Old Rajendra Nagar, New Delhi-110060</div>
-                    <input type="text" class="editable editable-address" id="address-edit" value="17/10 Old Rajendra Nagar-110060">
-                </div>
+      <div class="profile-card">
+        <h1 class="card-title">Doctor's Profile</h1>
+
+        <div class="card-content">
+          <div class="metrics-container">
+            <div class="info-box">
+              <div class="info-title">Total Number of Consultations:</div>
+              <div class="info-value">501</div>
             </div>
-            
-            <div class="button-group">
-                <button class="cancel-button" id="cancel-button">Cancel</button>
-                <button class="save-button" id="save-button">Save Changes</button>
-                <button class="edit-button" id="edit-button">Edit Info</button>
+
+            <div class="info-box">
+              <div class="info-title">Total Work Experience:</div>
+              <div class="info-value">5 years</div>
             </div>
+          </div>
+
+          <div class="personal-info">
+            <div class="personal-info-title">Personal Information</div>
+
+            <div class="personal-info-detail" id="name-display">
+              Name: Dr Mohit Chopra, (MD in General Medicine)
+            </div>
+            <input
+              type="text"
+              class="editable"
+              id="name-edit"
+              value="Dr Mohit Chopra, (MD in General Medicine)"
+            />
+
+            <div class="personal-info-detail" id="age-display">
+              Age: 33 years
+            </div>
+            <input
+              type="text"
+              class="editable"
+              id="age-edit"
+              value="33 years"
+            />
+
+            <div class="personal-info-detail" id="phone-display">
+              Phone: +91-XXXXXXXXXX
+            </div>
+            <input
+              type="text"
+              class="editable"
+              id="phone-edit"
+              value="+91-XXXXXXXXXX"
+            />
+
+            <div class="address" id="address-display">
+              17/10 Old Rajendra Nagar, New Delhi-110060
+            </div>
+            <input
+              type="text"
+              class="editable editable-address"
+              id="address-edit"
+              value="17/10 Old Rajendra Nagar-110060"
+            />
+          </div>
         </div>
+
+        <div class="button-group">
+          <button class="cancel-button" id="cancel-button">Cancel</button>
+          <button class="save-button" id="save-button">Save Changes</button>
+          <button class="edit-button" id="edit-button">Edit Info</button>
+        </div>
+      </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const editButton = document.getElementById('edit-button');
-            const saveButton = document.getElementById('save-button');
-            const cancelButton = document.getElementById('cancel-button');
-            
-            // Field display elements
-            const nameDisplay = document.getElementById('name-display');
-            const ageDisplay = document.getElementById('age-display');
-            const phoneDisplay = document.getElementById('phone-display');
-            const addressDisplay = document.getElementById('address-display');
-            
-            // Field edit elements
-            const nameEdit = document.getElementById('name-edit');
-            const ageEdit = document.getElementById('age-edit');
-            const phoneEdit = document.getElementById('phone-edit');
-            const addressEdit = document.getElementById('address-edit');
-            
-            // Store original values for cancel functionality
-            let originalValues = {
-                name: nameEdit.value,
-                age: ageEdit.value,
-                phone: phoneEdit.value,
-                address: addressEdit.value
-            };
-            
-            // Function to enter edit mode
-            function enterEditMode() {
-                // Hide display elements
-                nameDisplay.style.display = 'none';
-                ageDisplay.style.display = 'none';
-                phoneDisplay.style.display = 'none';
-                addressDisplay.style.display = 'none';
-                
-                // Show edit elements
-                nameEdit.style.display = 'block';
-                ageEdit.style.display = 'block';
-                phoneEdit.style.display = 'block';
-                addressEdit.style.display = 'block';
-                
-                // Hide edit button, show save and cancel buttons
-                editButton.style.display = 'none';
-                saveButton.style.display = 'block';
-                cancelButton.style.display = 'block';
-            }
-            
-            // Function to exit edit mode
-            function exitEditMode() {
-                // Show display elements
-                nameDisplay.style.display = 'block';
-                ageDisplay.style.display = 'block';
-                phoneDisplay.style.display = 'block';
-                addressDisplay.style.display = 'block';
-                
-                // Hide edit elements
-                nameEdit.style.display = 'none';
-                ageEdit.style.display = 'none';
-                phoneEdit.style.display = 'none';
-                addressEdit.style.display = 'none';
-                
-                // Show edit button, hide save and cancel buttons
-                editButton.style.display = 'block';
-                saveButton.style.display = 'none';
-                cancelButton.style.display = 'none';
-            }
-            
-            // Function to save changes
-            function saveChanges() {
-                // Update the display elements with the edited values
-                nameDisplay.textContent = `Name: ${nameEdit.value}`;
-                ageDisplay.textContent = `Age: ${ageEdit.value}`;
-                phoneDisplay.textContent = `Phone: ${phoneEdit.value}`;
-                addressDisplay.textContent = addressEdit.value;
-                
-                // Update original values with the new ones
-                originalValues = {
-                    name: nameEdit.value,
-                    age: ageEdit.value,
-                    phone: phoneEdit.value,
-                    address: addressEdit.value
-                };
-                
-                // Exit edit mode
-                exitEditMode();
-            }
-            
-            // Function to cancel changes
-            function cancelChanges() {
-                // Reset edit fields to original values
-                nameEdit.value = originalValues.name;
-                ageEdit.value = originalValues.age;
-                phoneEdit.value = originalValues.phone;
-                addressEdit.value = originalValues.address;
-                
-                // Exit edit mode
-                exitEditMode();
-            }
-            
-            // Event listeners
-            editButton.addEventListener('click', enterEditMode);
-            saveButton.addEventListener('click', saveChanges);
-            cancelButton.addEventListener('click', cancelChanges);
-            
-            // Add event listener for Appointments menu item to navigate to doc_appointments.html
-            document.getElementById('appointments-menu').addEventListener('click', function() {
-                window.location.href = 'doc_appointments.html';
-            });
-            
-            // Add click events for menu items (for styling active state)
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Add click event for sign out
-            document.querySelector('.sign-out').addEventListener('click', function() {
-                if(confirm('Are you sure you want to sign out?')) {
-                    alert('Sign out functionality would be implemented here.');
-                }
-            });
+      document.addEventListener("DOMContentLoaded", function () {
+        const editButton = document.getElementById("edit-button");
+        const saveButton = document.getElementById("save-button");
+        const cancelButton = document.getElementById("cancel-button");
+
+        // Field display elements
+        const nameDisplay = document.getElementById("name-display");
+        const ageDisplay = document.getElementById("age-display");
+        const phoneDisplay = document.getElementById("phone-display");
+        const addressDisplay = document.getElementById("address-display");
+
+        // Field edit elements
+        const nameEdit = document.getElementById("name-edit");
+        const ageEdit = document.getElementById("age-edit");
+        const phoneEdit = document.getElementById("phone-edit");
+        const addressEdit = document.getElementById("address-edit");
+
+        // Store original values for cancel functionality
+        let originalValues = {
+          name: nameEdit.value,
+          age: ageEdit.value,
+          phone: phoneEdit.value,
+          address: addressEdit.value,
+        };
+
+        // Function to enter edit mode
+        function enterEditMode() {
+          // Hide display elements
+          nameDisplay.style.display = "none";
+          ageDisplay.style.display = "none";
+          phoneDisplay.style.display = "none";
+          addressDisplay.style.display = "none";
+
+          // Show edit elements
+          nameEdit.style.display = "block";
+          ageEdit.style.display = "block";
+          phoneEdit.style.display = "block";
+          addressEdit.style.display = "block";
+
+          // Hide edit button, show save and cancel buttons
+          editButton.style.display = "none";
+          saveButton.style.display = "block";
+          cancelButton.style.display = "block";
+        }
+
+        // Function to exit edit mode
+        function exitEditMode() {
+          // Show display elements
+          nameDisplay.style.display = "block";
+          ageDisplay.style.display = "block";
+          phoneDisplay.style.display = "block";
+          addressDisplay.style.display = "block";
+
+          // Hide edit elements
+          nameEdit.style.display = "none";
+          ageEdit.style.display = "none";
+          phoneEdit.style.display = "none";
+          addressEdit.style.display = "none";
+
+          // Show edit button, hide save and cancel buttons
+          editButton.style.display = "block";
+          saveButton.style.display = "none";
+          cancelButton.style.display = "none";
+        }
+
+        // Function to save changes
+        function saveChanges() {
+          // Update the display elements with the edited values
+          nameDisplay.textContent = `Name: ${nameEdit.value}`;
+          ageDisplay.textContent = `Age: ${ageEdit.value}`;
+          phoneDisplay.textContent = `Phone: ${phoneEdit.value}`;
+          addressDisplay.textContent = addressEdit.value;
+
+          // Update original values with the new ones
+
+          originalValues = {
+            name: nameEdit.value,
+            age: ageEdit.value,
+            phone: phoneEdit.value,
+            address: addressEdit.value,
+          };
+
+          // Exit edit mode
+          exitEditMode();
+        }
+
+        // Function to cancel changes
+        function cancelChanges() {
+          // Reset edit fields to original values
+          nameEdit.value = originalValues.name;
+          ageEdit.value = originalValues.age;
+          phoneEdit.value = originalValues.phone;
+          addressEdit.value = originalValues.address;
+
+          // Exit edit mode
+          exitEditMode();
+        }
+
+        // Event listeners
+        editButton.addEventListener("click", enterEditMode);
+        saveButton.addEventListener("click", saveChanges);
+        cancelButton.addEventListener("click", cancelChanges);
+
+        // Add event listener for Appointments menu item to navigate to doc_appointments.html
+        document
+          .getElementById("appointments-menu")
+          .addEventListener("click", function () {
+            window.location.href = "doc_appointments.html";
+          });
+
+        // Add click events for menu items (for styling active state)
+        const menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            menuItems.forEach((i) => i.classList.remove("active"));
+            this.classList.add("active");
+          });
         });
+
+        // Add click event for sign out
+        document
+          .querySelector(".sign-out")
+          .addEventListener("click", function () {
+            if (confirm("Are you sure you want to sign out?")) {
+              alert("Sign out functionality would be implemented here.");
+            }
+          });
+      });
     </script>
-</body>
+  </body>
 </html>

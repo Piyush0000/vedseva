@@ -102,30 +102,22 @@
             Name: Loading... | Age: -- | Height: -- cm
           </div>
           <div class="info" id="patient-medical-info">
-            Blood Group: -- | Gender: -- | Weight: -- kg
+            | Gender: -- | Weight: -- kg
           </div>
           <div class="info" id="date-info"></div>
         </div>
       </div>
 
       <div class="section">
-        <h3>Symptoms</h3>
-        <div class="box">
-          The patient presented with fever, cough, cold, and stomach ache.
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Diagnosis</h3>
-        <div class="box">Viral and stomach infection.</div>
+        <h3>Remarks</h3>
+        <div class="box" id="patient-remarks">No remarks provided.</div>
       </div>
 
       <div class="section">
         <h3>Test Required</h3>
         <div class="box">
-          <ul>
-            <li>WIDAL Test (Test for typhoid)</li>
-            <li>CBC</li>
+          <ul id="prescribed-tests">
+            <li>Loading tests...</li>
           </ul>
         </div>
       </div>
@@ -133,10 +125,8 @@
       <div class="section">
         <h3>Medicine Required</h3>
         <div class="box">
-          <ul>
-            <li>Dolo-650 (3x/day, 3 days)</li>
-            <li>Montek LC (1x/night, 3 days)</li>
-            <li>PAN40 (1x/day, 3 days)</li>
+          <ul id="prescribed-medicines">
+            <li>Loading medicines...</li>
           </ul>
         </div>
       </div>
@@ -152,6 +142,21 @@
 
       // Load and display user data from localStorage
       document.addEventListener("DOMContentLoaded", function () {
+        // Load patient information
+        loadPatientInfo();
+
+        // Load prescribed medicines
+        loadPrescribedMedicines();
+
+        // Load prescribed tests
+        loadPrescribedTests();
+
+        // Load patient remarks
+        loadPatientRemarks();
+      });
+
+      // Function to load patient information
+      function loadPatientInfo() {
         // Try to get user data from localStorage
         const userDataString = localStorage.getItem("userData");
 
@@ -203,7 +208,72 @@
         } else {
           console.log("No user data found in localStorage");
         }
-      });
+      }
+
+      // Function to load patient remarks from localStorage
+      function loadPatientRemarks() {
+        const remarksContainer = document.getElementById("patient-remarks");
+        const patientRemarks = localStorage.getItem("patientRemarks");
+
+        if (patientRemarks && patientRemarks.trim() !== "") {
+          remarksContainer.textContent = patientRemarks;
+        } else {
+          remarksContainer.textContent = "No remarks provided.";
+        }
+      }
+
+      // Function to load prescribed medicines
+      function loadPrescribedMedicines() {
+        const medicinesContainer = document.getElementById(
+          "prescribed-medicines"
+        );
+        const prescribedMedicines = JSON.parse(
+          localStorage.getItem("prescribedMedicines") || "[]"
+        );
+
+        // Clear existing medicines
+        medicinesContainer.innerHTML = "";
+
+        if (prescribedMedicines.length > 0) {
+          prescribedMedicines.forEach((medicine) => {
+            const li = document.createElement("li");
+            li.textContent = `${medicine.name} (${medicine.quantity}, ${medicine.duration})`;
+            medicinesContainer.appendChild(li);
+          });
+        } else {
+          // Fallback to default medicines if none are prescribed
+          medicinesContainer.innerHTML = `
+            <li>Dolo-650 (3x/day, 3 days)</li>
+            <li>Montek LC (1x/night, 3 days)</li>
+            <li>PAN40 (1x/day, 3 days)</li>
+          `;
+        }
+      }
+
+      // Function to load prescribed tests
+      function loadPrescribedTests() {
+        const testsContainer = document.getElementById("prescribed-tests");
+        const prescribedTests = JSON.parse(
+          localStorage.getItem("prescribedTests") || "[]"
+        );
+
+        // Clear existing tests
+        testsContainer.innerHTML = "";
+
+        if (prescribedTests.length > 0) {
+          prescribedTests.forEach((test) => {
+            const li = document.createElement("li");
+            li.textContent = test;
+            testsContainer.appendChild(li);
+          });
+        } else {
+          // Fallback to default tests if none are prescribed
+          testsContainer.innerHTML = `
+            <li>WIDAL Test (Test for typhoid)</li>
+            <li>CBC</li>
+          `;
+        }
+      }
     </script>
   </body>
 </html>

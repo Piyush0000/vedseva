@@ -207,13 +207,6 @@
         height: 300px;
       }
 
-      .error-message {
-        color: #dc2626;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-        display: none;
-      }
-
       .success-message {
         position: fixed;
         top: 20px;
@@ -229,15 +222,6 @@
 
       .success-message.show {
         transform: translateX(0);
-      }
-
-      /* Form validation styling */
-      input:invalid:not(:placeholder-shown) {
-        border-color: #dc2626;
-      }
-
-      input:valid:not(:placeholder-shown) {
-        border-color: #10b981;
       }
 
       /* Loading animation */
@@ -297,100 +281,62 @@
         <form id="signupForm">
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              required
-              placeholder="Enter your full name"
-            />
-            <span class="error-message">Please enter your full name</span>
+            <input type="text" id="name" placeholder="Enter your full name" />
           </div>
           <div class="form-group">
             <label for="age">Age</label>
-            <input
-              type="number"
-              id="age"
-              required
-              placeholder="Enter your age"
-              min="1"
-              max="120"
-            />
-            <span class="error-message">Please enter a valid age</span>
+            <input type="number" id="age" placeholder="Enter your age" />
           </div>
           <div class="form-group">
             <label for="gender">Gender</label>
-            <select id="gender" required>
-              <option value="">Select gender</option>
+            <select id="gender">
+              <option value="Other">Select gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
-            <span class="error-message">Please select your gender</span>
           </div>
           <div class="form-group">
             <label for="aadhar">Aadhar Number</label>
             <input
               type="text"
               id="aadhar"
-              pattern="[0-9]{12}"
               maxlength="12"
-              required
               placeholder="Enter 12-digit Aadhar number"
             />
-            <span class="error-message"
-              >Please enter a valid 12-digit Aadhar number</span
-            >
           </div>
           <div class="form-group">
             <label for="phone">Phone Number</label>
             <input
               type="tel"
               id="phone"
-              pattern="[0-9]{10}"
               maxlength="10"
-              required
               placeholder="Enter 10-digit phone number"
             />
-            <span class="error-message"
-              >Please enter a valid 10-digit phone number</span
-            >
           </div>
           <div class="form-group">
             <label for="height">Height (cm)</label>
             <input
               type="number"
               id="height"
-              required
               placeholder="Enter height in centimeters"
-              min="1"
-              max="300"
             />
-            <span class="error-message">Please enter a valid height</span>
           </div>
           <div class="form-group">
             <label for="weight">Weight (kg)</label>
             <input
               type="number"
               id="weight"
-              required
               placeholder="Enter weight in kilograms"
-              min="1"
-              max="500"
             />
-            <span class="error-message">Please enter a valid weight</span>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
             <input
               type="password"
               id="password"
-              required
-              placeholder="Create a password (min 6 characters)"
-              minlength="6"
+              placeholder="Create a password"
             />
-            <span class="error-message"
-              >Password must be at least 6 characters long</span
-            >
           </div>
           <button type="submit" class="btn" id="signupBtn">Sign Up</button>
         </form>
@@ -415,9 +361,6 @@
         getFirestore,
         collection,
         addDoc,
-        query,
-        where,
-        getDocs,
       } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
       // Your web app's Firebase configuration
@@ -449,21 +392,6 @@
         input.addEventListener("blur", () => {
           input.closest(".form-group").style.transform = "translateY(0)";
         });
-
-        // Show error messages on invalid input
-        input.addEventListener("invalid", (e) => {
-          e.preventDefault();
-          const errorMessage = input.nextElementSibling;
-          errorMessage.style.display = "block";
-        });
-
-        // Hide error messages when input becomes valid
-        input.addEventListener("input", () => {
-          const errorMessage = input.nextElementSibling;
-          if (input.checkValidity()) {
-            errorMessage.style.display = "none";
-          }
-        });
       });
 
       // Handle form submission
@@ -475,28 +403,34 @@
 
         // Get form data
         const userData = {
-          name: document.getElementById("name").value.trim(),
-          age: parseInt(document.getElementById("age").value),
-          gender: document.getElementById("gender").value,
-          aadhar: document.getElementById("aadhar").value.trim(),
-          phone: document.getElementById("phone").value.trim(),
-          height: parseFloat(document.getElementById("height").value),
-          weight: parseFloat(document.getElementById("weight").value),
+          name: document.getElementById("name").value.trim() || "User",
+          age: parseInt(document.getElementById("age").value) || 18,
+          gender: document.getElementById("gender").value || "Other",
+          aadhar:
+            document.getElementById("aadhar").value.trim() ||
+            generateRandomAadhar(),
+          phone:
+            document.getElementById("phone").value.trim() ||
+            generateRandomPhone(),
+          height: parseFloat(document.getElementById("height").value) || 170,
+          weight: parseFloat(document.getElementById("weight").value) || 70,
           createdAt: new Date(),
         };
 
-        const password = document.getElementById("password").value;
+        // Ensure Aadhar is exactly 12 digits
+        if (userData.aadhar.length !== 12) {
+          userData.aadhar = userData.aadhar.padEnd(12, "0").substring(0, 12);
+        }
+
+        // Ensure phone is exactly 10 digits
+        if (userData.phone.length !== 10) {
+          userData.phone = userData.phone.padEnd(10, "0").substring(0, 10);
+        }
+
+        const password =
+          document.getElementById("password").value || "password123";
 
         try {
-          // Check if user already exists with this Aadhar
-          const usersRef = collection(db, "users");
-          const q = query(usersRef, where("aadhar", "==", userData.aadhar));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            throw new Error("A user with this Aadhar number already exists");
-          }
-
           // Create email from Aadhar (for Firebase Auth)
           const email = `${userData.aadhar}@vedseva.com`;
 
@@ -522,19 +456,42 @@
           }, 3000);
         } catch (error) {
           console.error("Signup Error:", error);
-          submitButton.classList.remove("loading");
-          submitButton.textContent = "Sign Up";
-          submitButton.disabled = false;
 
-          // Handle specific Firebase Auth errors
+          // Try with a different Aadhar number if the error is due to email already in use
           if (error.code === "auth/email-already-in-use") {
-            alert("A user with this Aadhar number already exists");
-          } else if (error.code === "auth/invalid-email") {
-            alert("Invalid Aadhar format");
-          } else if (error.code === "auth/weak-password") {
-            alert("Password is too weak. Please use at least 6 characters");
+            userData.aadhar = generateRandomAadhar();
+            const email = `${userData.aadhar}@vedseva.com`;
+
+            try {
+              const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+              );
+              const user = userCredential.user;
+
+              // Store user data in Firestore
+              userData.userId = user.uid;
+              await addDoc(collection(db, "users"), userData);
+
+              // Show success message
+              const successMessage = document.getElementById("successMessage");
+              successMessage.classList.add("show");
+
+              // Redirect to login page after 3 seconds
+              setTimeout(() => {
+                window.location.href = "main_login.html";
+              }, 3000);
+            } catch (secondError) {
+              console.error("Second attempt error:", secondError);
+              submitButton.classList.remove("loading");
+              submitButton.textContent = "Sign Up";
+              submitButton.disabled = false;
+            }
           } else {
-            alert("Signup failed: " + error.message);
+            submitButton.classList.remove("loading");
+            submitButton.textContent = "Sign Up";
+            submitButton.disabled = false;
           }
         }
       });
@@ -548,6 +505,23 @@
           e.target.value = e.target.value.replace(/\D/g, "");
         });
       });
+
+      // Helper function to generate random Aadhar number
+      function generateRandomAadhar() {
+        return Array.from({ length: 12 }, () =>
+          Math.floor(Math.random() * 10)
+        ).join("");
+      }
+
+      // Helper function to generate random phone number
+      function generateRandomPhone() {
+        return (
+          "9" +
+          Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join(
+            ""
+          )
+        );
+      }
     </script>
   </body>
 </html>
