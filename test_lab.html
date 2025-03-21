@@ -23,6 +23,8 @@
         --nav-bg: #e0f2fe;
         --pink: #ec4899;
         --black: #000000;
+        --green: #10b981;
+        --green-dark: #059669;
       }
 
       body {
@@ -155,6 +157,27 @@
         background-color: var(--primary-dark);
       }
 
+      .jan-aushadhi-button {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--green);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .jan-aushadhi-button:hover {
+        background-color: var(--green-dark);
+        transform: translateY(-2px);
+      }
+
       @media (max-width: 768px) {
         .cards-grid {
           grid-template-columns: 1fr;
@@ -191,25 +214,9 @@
               <!-- Medications will be loaded dynamically -->
             </div>
 
-            <div class="facility-card">
-              <div class="facility-name">Rural Health Lab</div>
-              <div class="facility-details">Distance: 1.8 km</div>
-              <div class="facility-details">
-                Tests Available: Blood Tests, X-Ray
-              </div>
-              <div class="facility-details">Timings: 9 AM - 6 PM</div>
-              <button class="book-facility">Get Directions</button>
-            </div>
-
-            <div class="facility-card">
-              <div class="facility-name">City Medical Store</div>
-              <div class="facility-details">Distance: 2.1 km</div>
-              <div class="facility-details">
-                All prescribed medicines available
-              </div>
-              <div class="facility-details">Timings: 8 AM - 10 PM</div>
-              <button class="book-facility">Get Directions</button>
-            </div>
+            <button class="jan-aushadhi-button" id="jan-aushadhi-button">
+              Access To Nearby Jan Aushadhi Kendra
+            </button>
           </div>
         </div>
       </div>
@@ -220,6 +227,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         loadPrescribedTests();
         loadPrescribedMedicines();
+        setupJanAushadhiButton();
       });
 
       // Function to load prescribed tests
@@ -322,6 +330,15 @@
         }
       }
 
+      // Setup Jan Aushadhi button
+      function setupJanAushadhiButton() {
+        document
+          .getElementById("jan-aushadhi-button")
+          .addEventListener("click", function () {
+            alert("Redirecting to nearby Jan Aushadhi Kendra locations...");
+          });
+      }
+
       // Event listeners for facility buttons
       document.querySelectorAll(".book-facility").forEach((button) => {
         button.addEventListener("click", function () {
@@ -331,3 +348,4 @@
     </script>
   </body>
 </html>
+Made with

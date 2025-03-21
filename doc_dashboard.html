@@ -10,6 +10,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <!-- Add jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <title>Doctor's Profile</title>
     <style>
       * {
@@ -217,9 +220,34 @@
       .editable-address {
         text-align: center;
       }
+
+      /* Added for loading overlay */
+      #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        display: none;
+      }
+
+      .loading-text {
+        color: white;
+        font-size: 1.5rem;
+      }
     </style>
   </head>
   <body>
+    <!-- Loading overlay for sign out -->
+    <div id="loading-overlay">
+      <div class="loading-text">Signing out...</div>
+    </div>
+
     <div class="sidebar">
       <div class="profile-pic-container">
         <div class="profile-pic">
@@ -227,6 +255,8 @@
         </div>
       </div>
       <div class="menu-item active" id="appointments-menu">Appointments</div>
+      <div class="menu-item" id="experience-menu">Experience</div>
+      <div class="menu-item" id="share-profile-menu">Share Profile</div>
       <div class="sign-out">
         Sign out <i class="fa-solid fa-right-from-bracket"></i>
       </div>
@@ -304,6 +334,8 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        const { jsPDF } = window.jspdf;
+
         const editButton = document.getElementById("edit-button");
         const saveButton = document.getElementById("save-button");
         const cancelButton = document.getElementById("cancel-button");
@@ -377,7 +409,6 @@
           addressDisplay.textContent = addressEdit.value;
 
           // Update original values with the new ones
-
           originalValues = {
             name: nameEdit.value,
             age: ageEdit.value,
@@ -401,6 +432,29 @@
           exitEditMode();
         }
 
+        // Function to generate PDF
+        function generatePDF() {
+          // Get the profile card element
+          const profileCard = document.querySelector(".profile-card");
+
+          // Create a promise to handle the PDF generation
+          html2canvas(profileCard).then((canvas) => {
+            // Create a new PDF
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            // Calculate the width and height to maintain aspect ratio
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = 297; // A4 height in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            const imgData = canvas.toDataURL("image/png");
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+            // Save the PDF
+            pdf.save("doctor_profile.pdf");
+          });
+        }
+
         // Event listeners
         editButton.addEventListener("click", enterEditMode);
         saveButton.addEventListener("click", saveChanges);
@@ -413,6 +467,20 @@
             window.location.href = "doc_appointments.html";
           });
 
+        // Add event listener for Experience menu item
+        document
+          .getElementById("experience-menu")
+          .addEventListener("click", function () {
+            window.location.href = "doc_experience.html";
+          });
+
+        // Add event listener for Share Profile menu item - Now generates PDF
+        document
+          .getElementById("share-profile-menu")
+          .addEventListener("click", function () {
+            generatePDF();
+          });
+
         // Add click events for menu items (for styling active state)
         const menuItems = document.querySelectorAll(".menu-item");
         menuItems.forEach((item) => {
@@ -422,12 +490,17 @@
           });
         });
 
-        // Add click event for sign out
+        // Add click event for sign out - Modified to redirect to index.html after 2 seconds
         document
           .querySelector(".sign-out")
           .addEventListener("click", function () {
             if (confirm("Are you sure you want to sign out?")) {
-              alert("Sign out functionality would be implemented here.");
+              const loadingOverlay = document.getElementById("loading-overlay");
+              loadingOverlay.style.display = "flex";
+
+              setTimeout(function () {
+                window.location.href = "index.html";
+              }, 2000);
             }
           });
       });
