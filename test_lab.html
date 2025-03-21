@@ -178,36 +178,17 @@
       <div class="cards-grid">
         <div class="card">
           <div class="card-header pink-header">TESTS REQUIRED</div>
-          <div class="card-content">
-            <div class="facility-card">
-              <div class="facility-name">Complete Blood Count (CBC)</div>
-              <div class="facility-details">Priority: High</div>
-              <div class="facility-details">
-                Fasting Required: Yes (8 hours)
-              </div>
-            </div>
-            <div class="facility-card">
-              <div class="facility-name">WIDAL Test (for Typhoid)</div>
-              <div class="facility-details">Priority: Medium</div>
-              <div class="facility-details">
-                Fasting Required: Yes (8 hours)
-              </div>
-            </div>
-            <button class="register-button">Register for Tests</button>
-            <div class="registration-message">
-              Your name has been registered for the next test camp!
-            </div>
+          <div class="card-content" id="tests-content">
+            <!-- Tests will be loaded dynamically -->
           </div>
         </div>
 
         <div class="card">
           <div class="card-header black-header">MEDS & NEARBY FACILITIES</div>
           <div class="card-content">
-            <div class="facility-card">
+            <div class="facility-card" id="medications-content">
               <div class="facility-name">Prescribed Medications</div>
-              <div class="facility-details">1. Dolo-650 (3x/day, 3 days)</div>
-              <div class="facility-details">2.Montek LC (1x/night, 3 days)</div>
-              <div class="facility-details">3. PAN40 (1x/day, 3 days)</div>
+              <!-- Medications will be loaded dynamically -->
             </div>
 
             <div class="facility-card">
@@ -235,17 +216,113 @@
     </main>
 
     <script>
-      
-      document
-        .querySelector(".register-button")
-        .addEventListener("click", function () {
-          document.querySelector(".registration-message").style.display =
-            "block";
-          this.textContent = "Registered!";
-          this.style.backgroundColor = "#059669"; 
-        });
+      // Load tests and medications from localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        loadPrescribedTests();
+        loadPrescribedMedicines();
+      });
 
-    
+      // Function to load prescribed tests
+      function loadPrescribedTests() {
+        const testsContainer = document.getElementById("tests-content");
+        const prescribedTests = JSON.parse(
+          localStorage.getItem("prescribedTests") || "[]"
+        );
+
+        // Clear existing content
+        testsContainer.innerHTML = "";
+
+        if (prescribedTests.length > 0) {
+          // Add tests from localStorage
+          prescribedTests.forEach((test) => {
+            const testCard = document.createElement("div");
+            testCard.className = "facility-card";
+            testCard.innerHTML = `
+              <div class="facility-name">${test}</div>
+              <div class="facility-details">Priority: Medium</div>
+              <div class="facility-details">Fasting Required: Yes (8 hours)</div>
+            `;
+            testsContainer.appendChild(testCard);
+          });
+        } else {
+          // Fallback to default tests
+          testsContainer.innerHTML = `
+            <div class="facility-card">
+              <div class="facility-name">WIDAL Test (for Typhoid)</div>
+              <div class="facility-details">Priority: Medium</div>
+              <div class="facility-details">Fasting Required: Yes (8 hours)</div>
+            </div>
+            <div class="facility-card">
+              <div class="facility-name">Complete Blood Count (CBC)</div>
+              <div class="facility-details">Priority: High</div>
+              <div class="facility-details">Fasting Required: Yes (8 hours)</div>
+            </div>
+          `;
+        }
+
+        // Add register button
+        const registerButton = document.createElement("button");
+        registerButton.className = "register-button";
+        registerButton.textContent = "Register for Tests";
+        testsContainer.appendChild(registerButton);
+
+        // Add registration message
+        const registrationMessage = document.createElement("div");
+        registrationMessage.className = "registration-message";
+        registrationMessage.textContent =
+          "Your name has been registered for the next test camp!";
+        testsContainer.appendChild(registrationMessage);
+
+        // Add event listener to register button
+        registerButton.addEventListener("click", function () {
+          registrationMessage.style.display = "block";
+          this.textContent = "Registered!";
+          this.style.backgroundColor = "#059669";
+        });
+      }
+
+      // Function to load prescribed medicines
+      function loadPrescribedMedicines() {
+        const medicationsContainer = document.getElementById(
+          "medications-content"
+        );
+        const prescribedMedicines = JSON.parse(
+          localStorage.getItem("prescribedMedicines") || "[]"
+        );
+
+        // Keep the heading
+        const heading = medicationsContainer.querySelector(".facility-name");
+        medicationsContainer.innerHTML = "";
+        medicationsContainer.appendChild(heading);
+
+        if (prescribedMedicines.length > 0) {
+          // Add medicines from localStorage
+          prescribedMedicines.forEach((medicine, index) => {
+            const medicineDetail = document.createElement("div");
+            medicineDetail.className = "facility-details";
+            medicineDetail.textContent = `${index + 1}. ${medicine.name} (${
+              medicine.quantity
+            }, ${medicine.duration})`;
+            medicationsContainer.appendChild(medicineDetail);
+          });
+        } else {
+          // Fallback to default medicines
+          const defaultMedicines = [
+            "1. Dolo-650 (3x/day, 3 days)",
+            "2. Montek LC (1x/night, 3 days)",
+            "3. PAN40 (1x/day, 3 days)",
+          ];
+
+          defaultMedicines.forEach((medicine) => {
+            const medicineDetail = document.createElement("div");
+            medicineDetail.className = "facility-details";
+            medicineDetail.textContent = medicine;
+            medicationsContainer.appendChild(medicineDetail);
+          });
+        }
+      }
+
+      // Event listeners for facility buttons
       document.querySelectorAll(".book-facility").forEach((button) => {
         button.addEventListener("click", function () {
           alert("Redirecting to booking/directions page...");
