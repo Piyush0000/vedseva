@@ -3,734 +3,511 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Medicine and Test Search</title>
+    <title>Medical Appointments</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
+      * {
         margin: 0;
         padding: 0;
-        background-color: #f5f9ff;
-        display: flex;
-      }
-
-      .sidebar {
-        width: 220px;
-        background-color: #f5f9ff;
-        border-right: 1px solid #e0e0e0;
-        padding: 20px;
-        height: 100vh;
         box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f0f7ff;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
-      }
-
-      .sidebar-section {
-        margin-bottom: 30px;
-      }
-
-      .main-content {
-        flex: 1;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .content-area {
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        flex: 1;
-      }
-
-      .bottom-section {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      .remarks-section,
-      .medicines-section,
-      .tests-section {
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-      }
-
-      h1 {
-        color: #1e3a64;
-        font-size: 24px;
-        margin-top: 0;
-        margin-bottom: 20px;
-      }
-
-      input[type="text"] {
-        width: 90%;
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 14px;
-      }
-
-      textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        min-height: 100px;
-        resize: vertical;
-      }
-
-      .item {
-        display: flex;
-        justify-content: space-between;
         align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 900px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        min-height: 600px; /* Increased minimum height */
+      }
+
+      .header {
+        background-color: #1a73e8;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .appointments-list {
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background-color: #f1f8ff;
+        padding: 12px;
+        text-align: left;
+        border-bottom: 2px solid #e0e0e0;
+        color: #555;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .appointment-row:hover {
+        background-color: #f8f9ff;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .btn-call {
+        background-color: #00c853;
+        color: white;
+      }
+
+      .btn-call:hover {
+        background-color: #00a844;
+        box-shadow: 0 2px 8px rgba(0, 200, 83, 0.3);
+      }
+
+      .problem-badge {
+        background-color: #ffebee;
+        color: #d32f2f;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        display: inline-block;
+      }
+
+      .time-badge {
+        font-weight: 600;
+        color: #1a73e8;
+      }
+
+      .empty-state {
+        padding: 40px;
+        text-align: center;
+        color: #777;
+      }
+
+      /* Dropdown styles - updated for click instead of hover */
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-btn {
+        background-color: white;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 8px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .dropdown-btn:hover {
+        background-color: #f0f0f0;
+      }
+
+      .dropdown-btn:after {
+        content: "";
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #333;
+        margin-left: 5px;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 180px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        z-index: 1;
+        margin-top: 5px;
+        left: 0;
+      }
+
+      .dropdown-content a {
+        color: #333;
+        padding: 10px 15px;
+        text-decoration: none;
+        display: block;
+        font-size: 14px;
+        transition: background-color 0.2s;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #f5f8ff;
+      }
+
+      /* Show dropdown when active class is applied */
+      .dropdown-active .dropdown-content {
+        display: block;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          border-radius: 0;
+        }
+
+        th,
+        td {
+          padding: 10px 8px;
+        }
+
+        .header {
+          padding: 16px;
+          font-size: 1.5rem;
+        }
+
+        .dropdown-content {
+          right: 0;
+          left: auto;
+        }
+      }
+
+      /* Modal styles for history view */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        overflow: auto;
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #777;
+      }
+
+      .close-modal:hover {
+        color: #333;
+      }
+
+      .modal-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
         margin-bottom: 15px;
       }
 
-      .checkbox {
-        width: 20px;
-        height: 20px;
-        background-color: white;
-        border: 1px solid #ccc;
-        cursor: pointer;
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
       }
 
-      .input-field {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #e0e0e0;
-        border-radius: 3px;
-        background-color: #f5f5f5;
-        margin-top: 5px;
-      }
-
-      .medicine-item,
-      .test-item {
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #f5f9ff;
-      }
-
-      .done-button {
-        background-color: #3366ff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        float: right;
-        margin-top: 10px;
-      }
-
-      .medicine-details,
-      .test-details {
-        display: none;
-        margin-top: 10px;
-      }
-
-      #medicine-list,
-      #test-list {
-        display: none;
-        max-height: 380px;
+      .modal-body {
+        max-height: 60vh;
         overflow-y: auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        padding: 5px;
-        background-color: white;
-      }
-
-      /* Video call styles */
-      .video-container {
-        width: 100%;
-        height: 300px;
-        position: relative;
-        background-color: #1e293b;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .video-container::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: linear-gradient(to right, #2d6efd, #5cb85c);
-      }
-
-      .video-placeholder {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1;
-        font-size: 1.5rem;
-        color: white;
-      }
-
-      .remote-video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 12px;
-        z-index: 0;
-      }
-
-      .user-video {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        width: 160px;
-        height: 120px;
-        border-radius: 8px;
-        overflow: hidden;
-        z-index: 2;
-        background-color: #64748b;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-      }
-
-      .call-controls {
-        display: flex;
-        gap: 20px;
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 3;
-      }
-
-      .control-button {
-        background-color: #2d6efd;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .control-button:hover {
-        background-color: #0d52d9;
-        transform: scale(1.1);
-      }
-
-      .appointment-details {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 14px;
-        z-index: 3;
-        color: white;
       }
     </style>
   </head>
   <body>
-    <!-- Left sidebar with both medicines and tests sections -->
-    <div class="sidebar">
-      <div class="sidebar-section">
-        <h1>Medicines</h1>
-        <input
-          type="text"
-          id="medicine-search"
-          placeholder="Search for medicines"
-          onclick="showMedicineList()"
-          oninput="searchMedicines()"
-        />
-        <div id="medicine-list">
-          <!-- Medicines will be populated by search -->
-        </div>
-      </div>
+    <div class="container">
+      <div class="header">Appointments</div>
 
-      <div class="sidebar-section">
-        <h1>Tests</h1>
-        <input
-          type="text"
-          id="test-search"
-          placeholder="Search for tests"
-          onclick="showTestList()"
-          oninput="searchTests()"
-        />
-        <div id="test-list">
-          <!-- Tests will be populated by search -->
+      <div class="appointments-list">
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Patient Name</th>
+              <th>Problem</th>
+              <th>Time</th>
+              <th>Medical History</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="appointments-table-body">
+            <!-- Appointments will be populated here via JavaScript -->
+          </tbody>
+        </table>
+
+        <div id="empty-state" class="empty-state" style="display: none">
+          <p>No appointments scheduled for today.</p>
         </div>
       </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
-      <div class="content-area">
-        <!-- Video Call Section - Added -->
-        <div class="video-container">
-          <div class="video-placeholder" id="videoPlaceholder">
-            Connecting to patient...
-          </div>
-          <video id="remoteVideo" class="remote-video" autoplay></video>
-          <video id="userVideo" class="user-video" autoplay muted></video>
-          <div class="appointment-details" id="appointmentDetails"></div>
-          <div class="call-controls">
-            <button class="control-button" id="muteButton">🎤</button>
-            <button class="control-button" id="videoButton">📹</button>
-          </div>
+    <!-- Modal for viewing history -->
+    <div id="historyModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
+        <div class="modal-header">
+          <h3 id="modalTitle" class="modal-title">Medical History</h3>
         </div>
-      </div>
-
-      <!-- Bottom Section -->
-      <div class="bottom-section">
-        <!-- Medicines Section -->
-        <div class="medicines-section">
-          <h1>Medicines</h1>
-          <div id="selected-medicines"></div>
+        <div id="modalBody" class="modal-body">
+          <!-- History content will be loaded here -->
         </div>
-
-        <!-- Tests Section -->
-        <div class="tests-section">
-          <h1>Tests</h1>
-          <div id="selected-tests"></div>
-        </div>
-
-        <!-- Remarks Section - Moved to bottom -->
-        <div class="remarks-section">
-          <h1>Patient Remarks</h1>
-          <textarea
-            id="patient-remarks"
-            placeholder="Enter remarks about the patient's condition, diagnosis, and recommendations..."
-          ></textarea>
-        </div>
-
-        <a href="digital_sign.html"
-          ><button class="done-button" onclick="savePrescription()">
-            Done
-          </button></a
-        >
       </div>
     </div>
 
     <script>
-      // Global database of medicines and tests
-      const medicineDatabase = [
-        "Dolo-650",
-        "Montek LC",
-        "Paracetamol",
-        "Aspirin",
-        "Ibuprofen",
-        "Crocin",
-        "Disprin",
-        "Allegra",
-        "Cetrizine",
-        "Benadryl",
-        "Atorvastatin",
-        "Metformin",
-        "Lisinopril",
-        "Amlodipine",
-        "Metoprolol",
-        "Omeprazole",
-        "Losartan",
-        "Albuterol",
-        "Gabapentin",
-        "Levothyroxine",
+      // Preset appointment data
+      const appointments = [
+        {
+          id: 1,
+          patientName: "Jatin Yadav",
+          problem: "Skin Problem",
+          time: "11:30am",
+          hasHistory: true,
+        },
+        {
+          id: 2,
+          patientName: "Kanishka Narang",
+          problem: "Annual Checkup",
+          time: "2:00pm",
+          hasHistory: true,
+        },
+        {
+          id: 3,
+          patientName: "Kyra Gupta",
+          problem: "Respiratory Issues",
+          time: "11:00am",
+          hasHistory: true,
+        },
+        {
+          id: 4,
+          patientName: "Sonam Patel",
+          problem: "Joint Pain",
+          time: "12:00pm",
+          hasHistory: true,
+        },
       ];
 
-      const testDatabase = [
-        "WIDAL Test",
-        "CBC",
-        "Blood Sugar",
-        "Lipid Profile",
-        "Thyroid Profile",
-        "Liver Function Test",
-        "Kidney Function Test",
-        "Complete Urine Examination",
-        "ECG",
-        "X-Ray",
-        "MRI",
-        "CT Scan",
-        "Ultrasound",
-        "PET Scan",
-        "Hemoglobin Test",
-        "ESR",
-        "CRP",
-        "HIV Test",
-        "HbA1c",
-        "Vitamin D Test",
-      ];
-
-      // Arrays to store selected medicines and tests
-      let selectedMedicines = [];
-      let selectedTests = [];
-      let patientRemarks = "";
-      let userStream = null;
-      let isAudioMuted = false;
-      let isVideoOff = false;
-
-      // Check if there are already stored items in localStorage
-      window.onload = function () {
-        // Clear previous prescription data when the page loads
-        clearPrescription();
-
-        // Check for any existing remarks in localStorage
-        const existingRemarks = localStorage.getItem("patientRemarks");
-        if (existingRemarks) {
-          document.getElementById("patient-remarks").value = existingRemarks;
-          patientRemarks = existingRemarks;
-        }
-
-        // Initialize video call elements
-        initializeVideoCall();
+      // Sample patient history data
+      const patientHistories = {
+        1: {
+          past: "Patient has a history of eczema since childhood. Last flare-up was 3 months ago. Previously prescribed topical corticosteroids. Known allergies to certain fabrics.",
+          previous:
+            "Last visit: Jan 15, 2025 - Treated for mild skin irritation\nNov 10, 2024 - Annual physical examination\nSep 5, 2024 - Skin biopsy (results negative for malignancy)",
+          medications:
+            "Triamcinolone 0.1% cream (as needed)\nCetirizine 10mg daily\nMultivitamin supplement",
+          allergies: "Wool\nNickel\nSulfites\nPenicillin (moderate reaction)",
+          lab: "Complete Blood Count (Feb 10, 2025): Within normal ranges\nAllergy Panel (Dec 5, 2024): Positive for dust mites, pollen",
+        },
+        2: {
+          past: "Patient has controlled hypertension for 5 years. Family history of cardiovascular disease. Underwent appendectomy in 2020.",
+          previous:
+            "Last visit: Dec 8, 2024 - Blood pressure check\nAug 22, 2024 - Flu vaccination\nMay 15, 2024 - Annual physical examination",
+          medications: "Lisinopril 10mg daily\nAspirin 81mg daily",
+          allergies: "No known allergies",
+          lab: "Lipid Panel (Jan 5, 2025): Slightly elevated LDL\nBlood Pressure: 135/85 mmHg (Feb 10, 2025)",
+        },
+        3: {
+          past: "History of asthma since age 12. Occasional bronchitis during winter months. Non-smoker.",
+          previous:
+            "Last visit: Feb 1, 2025 - Bronchitis treatment\nNov 30, 2024 - Pulmonary function test\nSep 15, 2024 - Flu vaccination",
+          medications:
+            "Albuterol inhaler (as needed)\nFluticasone inhaler (twice daily)\nSingulair 10mg (nightly)",
+          allergies: "Pollen\nDust\nPet dander\nSulfa drugs",
+          lab: "Chest X-ray (Feb 2, 2025): Normal\nPulmonary Function Test (Nov 30, 2024): Mild obstruction",
+        },
+        4: {
+          past: "Diagnosed with rheumatoid arthritis in 2022. Maternal history of osteoporosis. Fractured left wrist in 2019.",
+          previous:
+            "Last visit: Jan 20, 2025 - Joint pain follow-up\nNov 10, 2024 - Physical therapy evaluation\nJul 5, 2024 - Rheumatology consultation",
+          medications:
+            "Methotrexate 15mg weekly\nFolic acid 1mg daily\nIbuprofen 400mg (as needed for pain)",
+          allergies: "Shellfish\nNSAIDs (except ibuprofen)",
+          lab: "Rheumatoid Factor (Dec 15, 2024): Positive\nCRP (Dec 15, 2024): Elevated (15 mg/L)\nVitamin D: Slightly low (28 ng/mL)",
+        },
       };
 
-      // Function to initialize video call
-      function initializeVideoCall() {
-        const videoPlaceholder = document.getElementById("videoPlaceholder");
-        const userVideo = document.getElementById("userVideo");
-        const remoteVideo = document.getElementById("remoteVideo");
-        const muteButton = document.getElementById("muteButton");
-        const videoButton = document.getElementById("videoButton");
-        const appointmentDetails =
-          document.getElementById("appointmentDetails");
+      // Function to render appointments
+      function renderAppointments() {
+        const tableBody = document.getElementById("appointments-table-body");
+        const emptyState = document.getElementById("empty-state");
 
-        // Get appointment data from localStorage
-        const currentAppointment = JSON.parse(
-          localStorage.getItem("currentAppointment")
+        if (appointments.length === 0) {
+          tableBody.innerHTML = "";
+          emptyState.style.display = "block";
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        tableBody.innerHTML = appointments
+          .map(
+            (appointment) => `
+                <tr class="appointment-row" data-id="${appointment.id}">
+                    <td>${appointment.id}.</td>
+                    <td>${appointment.patientName}</td>
+                    <td><span class="problem-badge">${appointment.problem}</span></td>
+                    <td><span class="time-badge">${appointment.time}</span></td>
+                    <td>
+                        <div class="dropdown" id="dropdown-${appointment.id}">
+                            <button class="dropdown-btn" onclick="toggleDropdown(${appointment.id})">History</button>
+                            <div class="dropdown-content" id="dropdown-content-${appointment.id}">
+                                <a href="#" onclick="viewHistory(${appointment.id}, 'past')">Past Medical History</a>
+                                <a href="#" onclick="viewHistory(${appointment.id}, 'previous')">Previous Visits</a>
+                                <a href="#" onclick="viewHistory(${appointment.id}, 'medications')">Medications</a>
+                                <a href="#" onclick="viewHistory(${appointment.id}, 'allergies')">Allergies</a>
+                                <a href="#" onclick="viewHistory(${appointment.id}, 'lab')">Lab Results</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-call" onclick="startCall(${appointment.id})">
+                            Start call
+                        </button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      // Function to toggle dropdown visibility
+      function toggleDropdown(id) {
+        // Close all other dropdowns first
+        document.querySelectorAll(".dropdown").forEach((dropdown) => {
+          if (dropdown.id !== `dropdown-${id}`) {
+            dropdown.classList.remove("dropdown-active");
+          }
+        });
+
+        // Toggle the clicked dropdown
+        const dropdown = document.getElementById(`dropdown-${id}`);
+        dropdown.classList.toggle("dropdown-active");
+
+        // Add event listener to close dropdown when clicking outside
+        setTimeout(() => {
+          document.addEventListener("click", closeDropdownsOnClickOutside);
+        }, 0);
+
+        // Prevent the event from bubbling up
+        event.stopPropagation();
+      }
+
+      // Function to close dropdowns when clicking outside
+      function closeDropdownsOnClickOutside(e) {
+        const dropdowns = document.querySelectorAll(".dropdown");
+        let clickedInsideDropdown = false;
+
+        dropdowns.forEach((dropdown) => {
+          if (dropdown.contains(e.target)) {
+            clickedInsideDropdown = true;
+          }
+        });
+
+        if (!clickedInsideDropdown) {
+          dropdowns.forEach((dropdown) => {
+            dropdown.classList.remove("dropdown-active");
+          });
+          document.removeEventListener("click", closeDropdownsOnClickOutside);
+        }
+      }
+
+      // Function to view patient history
+      function viewHistory(appointmentId, historyType) {
+        const historyTypes = {
+          past: "Past Medical History",
+          previous: "Previous Visits",
+          medications: "Current Medications",
+          allergies: "Allergies and Reactions",
+          lab: "Laboratory Results",
+        };
+
+        // Close dropdown after selecting an option
+        document.querySelectorAll(".dropdown").forEach((dropdown) => {
+          dropdown.classList.remove("dropdown-active");
+        });
+
+        // Get the modal elements
+        const modal = document.getElementById("historyModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalBody = document.getElementById("modalBody");
+
+        // Set the modal content
+        modalTitle.textContent = `${historyTypes[historyType]} - ${
+          appointments.find((a) => a.id === appointmentId).patientName
+        }`;
+
+        // Get the patient history content
+        const historyContent = patientHistories[appointmentId][historyType];
+
+        // Format and display the content
+        modalBody.innerHTML = `<p style="white-space: pre-line;">${historyContent}</p>`;
+
+        // Display the modal
+        modal.style.display = "block";
+
+        // Prevent default link behavior
+        event.preventDefault();
+      }
+
+      // Function to close the history modal
+      function closeHistoryModal() {
+        const modal = document.getElementById("historyModal");
+        modal.style.display = "none";
+      }
+
+      // Close the modal if the user clicks outside of it
+      window.onclick = function (event) {
+        const modal = document.getElementById("historyModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Function to start a call - modified to redirect to doc_videocall.html
+      function startCall(appointmentId) {
+        // Save the appointment info to session storage if needed
+        sessionStorage.setItem("currentAppointmentId", appointmentId);
+        sessionStorage.setItem(
+          "currentPatientName",
+          appointments.find((a) => a.id === appointmentId).patientName
         );
 
-        if (currentAppointment) {
-          // Display appointment details
-          const displayDate = formatDate(currentAppointment.date);
-          appointmentDetails.innerText = `Patient: ${
-            currentAppointment.patientName || ""
-          } - ${currentAppointment.time}, ${displayDate}`;
-
-          // Start the call automatically
-          startCall(currentAppointment);
-        } else {
-          videoPlaceholder.innerText =
-            "No appointment data found. Please schedule an appointment.";
-        }
-
-        // Mute/unmute audio
-        muteButton.addEventListener("click", function () {
-          if (!userStream) return;
-
-          isAudioMuted = !isAudioMuted;
-          userStream.getAudioTracks().forEach((track) => {
-            track.enabled = !isAudioMuted;
-          });
-
-          muteButton.innerText = isAudioMuted ? "🔇" : "🎤";
-        });
-
-        // Turn video on/off
-        videoButton.addEventListener("click", function () {
-          if (!userStream) return;
-
-          isVideoOff = !isVideoOff;
-          userStream.getVideoTracks().forEach((track) => {
-            track.enabled = !isVideoOff;
-          });
-
-          videoButton.innerText = isVideoOff ? "🚫" : "📹";
-        });
+        // Redirect to the video call page
+        window.location.href = "doc_videocall.html";
       }
 
-      // Format date for display
-      function formatDate(dateStr) {
-        if (!dateStr) return "";
-        const date = new Date(dateStr);
-        return date.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        });
-      }
-
-      // Start video call
-      async function startCall(appointment) {
-        const videoPlaceholder = document.getElementById("videoPlaceholder");
-        const userVideo = document.getElementById("userVideo");
-        const remoteVideo = document.getElementById("remoteVideo");
-
-        videoPlaceholder.innerText = `Connecting to patient ${
-          appointment.patientName || ""
-        }...`;
-
-        try {
-          // Request user media
-          userStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-          });
-
-          // Display user's video
-          userVideo.srcObject = userStream;
-
-          // In a real app, you would connect to the patient here
-          // For demo purposes, we'll just show a mock connection after 2 seconds
-          setTimeout(() => {
-            videoPlaceholder.style.display = "none";
-            remoteVideo.style.display = "block";
-            // Mock remote video with a color
-            remoteVideo.style.backgroundColor = "#0f172a";
-          }, 2000);
-        } catch (err) {
-          console.error("Error accessing media devices:", err);
-          videoPlaceholder.innerText = "Could not access camera/microphone";
-        }
-      }
-
-      // Function to clear prescription data
-      function clearPrescription() {
-        selectedMedicines = [];
-        selectedTests = [];
-        document.getElementById("selected-medicines").innerHTML = "";
-        document.getElementById("selected-tests").innerHTML = "";
-      }
-
-      // Function to save prescription data to localStorage
-      function savePrescription() {
-        // Save medicines and tests
-        localStorage.setItem(
-          "prescribedMedicines",
-          JSON.stringify(selectedMedicines)
-        );
-        localStorage.setItem("prescribedTests", JSON.stringify(selectedTests));
-
-        // Save remarks
-        patientRemarks = document.getElementById("patient-remarks").value;
-        localStorage.setItem("patientRemarks", patientRemarks);
-
-        alert("Prescription and remarks have been saved!");
-      }
-
-      // Function to show medicine list when search bar is clicked
-      function showMedicineList() {
-        document.getElementById("medicine-list").style.display = "block";
-        if (document.getElementById("medicine-list").children.length === 0) {
-          searchMedicines();
-        }
-      }
-
-      // Function to show test list when search bar is clicked
-      function showTestList() {
-        document.getElementById("test-list").style.display = "block";
-        if (document.getElementById("test-list").children.length === 0) {
-          searchTests();
-        }
-      }
-
-      // Function to toggle details display
-      function toggleDetails(id) {
-        const details = document.getElementById(id);
-        if (details.style.display === "block") {
-          details.style.display = "none";
-        } else {
-          details.style.display = "block";
-        }
-      }
-
-      // Function to add medicine to selected list
-      function addMedicine(name, durationId, quantityId) {
-        const duration =
-          document.getElementById(durationId).value || "Not specified";
-        const quantity =
-          document.getElementById(quantityId).value || "Not specified";
-
-        const medicineElement = document.createElement("div");
-        medicineElement.className = "medicine-item";
-        medicineElement.innerHTML = `
-          <strong>${name}</strong><br>
-          Duration: ${duration}<br>
-          Quantity: ${quantity}
-          <button onclick="removeMedicine('${name}')" style="margin-left: 10px; background-color: #ff3366; color: white; border: none; border-radius: 3px; padding: 2px 5px;">Remove</button>
-        `;
-
-        document
-          .getElementById("selected-medicines")
-          .appendChild(medicineElement);
-
-        // Store in the array
-        selectedMedicines.push({
-          name: name,
-          duration: duration,
-          quantity: quantity,
-        });
-
-        // Clear inputs
-        document.getElementById(durationId).value = "";
-        document.getElementById(quantityId).value = "";
-      }
-
-      // Function to remove medicine from selected list
-      function removeMedicine(name) {
-        selectedMedicines = selectedMedicines.filter(
-          (medicine) => medicine.name !== name
-        );
-
-        // Update display
-        document.getElementById("selected-medicines").innerHTML = "";
-        selectedMedicines.forEach((medicine) => {
-          const medicineElement = document.createElement("div");
-          medicineElement.className = "medicine-item";
-          medicineElement.innerHTML = `
-            <strong>${medicine.name}</strong><br>
-            Duration: ${medicine.duration}<br>
-            Quantity: ${medicine.quantity}
-            <button onclick="removeMedicine('${medicine.name}')" style="margin-left: 10px; background-color: #ff3366; color: white; border: none; border-radius: 3px; padding: 2px 5px;">Remove</button>
-          `;
-          document
-            .getElementById("selected-medicines")
-            .appendChild(medicineElement);
-        });
-      }
-
-      // Function to add test to selected list
-      function addTest(name) {
-        const testElement = document.createElement("div");
-        testElement.className = "test-item";
-        testElement.innerHTML = `
-          <strong>${name}</strong>
-          <button onclick="removeTest('${name}')" style="margin-left: 10px; background-color: #ff3366; color: white; border: none; border-radius: 3px; padding: 2px 5px;">Remove</button>
-        `;
-
-        document.getElementById("selected-tests").appendChild(testElement);
-
-        // Store in the array
-        selectedTests.push(name);
-      }
-
-      // Function to remove test from selected list
-      function removeTest(name) {
-        selectedTests = selectedTests.filter((test) => test !== name);
-
-        // Update display
-        document.getElementById("selected-tests").innerHTML = "";
-        selectedTests.forEach((test) => {
-          const testElement = document.createElement("div");
-          testElement.className = "test-item";
-          testElement.innerHTML = `
-            <strong>${test}</strong>
-            <button onclick="removeTest('${test}')" style="margin-left: 10px; background-color: #ff3366; color: white; border: none; border-radius: 3px; padding: 2px 5px;">Remove</button>
-          `;
-          document.getElementById("selected-tests").appendChild(testElement);
-        });
-      }
-
-      // Function to search medicines
-      function searchMedicines() {
-        const searchTerm = document
-          .getElementById("medicine-search")
-          .value.toLowerCase();
-        const medicineList = document.getElementById("medicine-list");
-
-        // Clear current list
-        medicineList.innerHTML = "";
-
-        // Filter and add matching medicines
-        let counter = 1;
-        medicineDatabase
-          .filter((medicine) => medicine.toLowerCase().includes(searchTerm))
-          .forEach((medicine) => {
-            const id = `search-medicine-${counter}`;
-
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "item";
-            itemDiv.innerHTML = `
-              <span>${counter}. ${medicine}</span>
-              <div class="checkbox" onclick="toggleDetails('${id}')"></div>
-            `;
-
-            const detailsDiv = document.createElement("div");
-            detailsDiv.className = "medicine-details";
-            detailsDiv.id = id;
-            detailsDiv.innerHTML = `
-              <input type="text" class="input-field" placeholder="Duration" id="duration-${id}">
-              <input type="text" class="input-field" placeholder="Quantity" id="quantity-${id}">
-              <button onclick="addMedicine('${medicine}', 'duration-${id}', 'quantity-${id}')" style="background-color: #3366ff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin-top: 5px;">Add</button>
-            `;
-
-            medicineList.appendChild(itemDiv);
-            medicineList.appendChild(detailsDiv);
-
-            counter++;
-          });
-      }
-
-      // Function to search tests
-      function searchTests() {
-        const searchTerm = document
-          .getElementById("test-search")
-          .value.toLowerCase();
-        const testList = document.getElementById("test-list");
-
-        // Clear current list
-        testList.innerHTML = "";
-
-        // Filter and add matching tests
-        let counter = 1;
-        testDatabase
-          .filter((test) => test.toLowerCase().includes(searchTerm))
-          .forEach((test) => {
-            const id = `search-test-${counter}`;
-
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "item";
-            itemDiv.innerHTML = `
-              <span>${counter}. ${test}</span>
-              <div class="checkbox" onclick="toggleDetails('${id}')"></div>
-            `;
-
-            const detailsDiv = document.createElement("div");
-            detailsDiv.className = "medicine-details";
-            detailsDiv.id = id;
-            detailsDiv.innerHTML = `
-              <button onclick="addTest('${test}')" style="background-color: #3366ff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin-top: 5px;">Add</button>
-            `;
-
-            testList.appendChild(itemDiv);
-            testList.appendChild(detailsDiv);
-
-            counter++;
-          });
-      }
-
-      // Add event listener to close the lists when clicking outside
-      document.addEventListener("click", function (event) {
-        const medicineSearch = document.getElementById("medicine-search");
-        const testSearch = document.getElementById("test-search");
-        const medicineList = document.getElementById("medicine-list");
-        const testList = document.getElementById("test-list");
-
-        if (
-          event.target !== medicineSearch &&
-          !medicineList.contains(event.target) &&
-          event.target !== testSearch &&
-          !testList.contains(event.target)
-        ) {
-          medicineList.style.display = "none";
-          testList.style.display = "none";
-        }
+      // Initialize the app
+      document.addEventListener("DOMContentLoaded", () => {
+        renderAppointments();
       });
     </script>
   </body>
