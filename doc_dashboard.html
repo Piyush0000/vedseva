@@ -3,88 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dr. Mohit Chopra - Professional Profile</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <title>Dr. Mohit Chopra - Professional Profile</title>
     <style>
-      :root {
-        --primary-color: #2d6cc0;
-        --secondary-color: #1b2a41;
-        --background-light: #ebf2fa;
-        --text-light: #f8f9fa;
-        --accent-color: #28a745;
-        --warning-color: #dc3545;
-      }
-
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Arial", sans-serif;
       }
 
       body {
+        background-color: #f4f7f6;
         display: flex;
         min-height: 100vh;
-        background-color: var(--background-light);
-        color: #333;
-        line-height: 1.6;
       }
 
       .sidebar {
         width: 250px;
-        background-color: var(--secondary-color);
-        color: var(--text-light);
+        background-color: #2c3e50;
+        color: white;
         display: flex;
         flex-direction: column;
-        transition: width 0.3s ease;
-        overflow: hidden;
+        padding: 20px 0;
       }
 
-      .profile-pic-container {
-        padding: 25px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      .sidebar-header {
+        text-align: center;
+        padding-bottom: 20px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .profile-pic {
-        width: 200px;
-        height: 200px;
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
-        border: 4px solid var(--primary-color);
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        object-fit: cover;
+        border: 3px solid #3498db;
       }
 
-      .profile-pic img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      .sidebar-menu {
+        margin-top: 20px;
       }
 
       .menu-item {
         padding: 15px 25px;
-        font-size: 1.1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: background-color 0.3s ease;
-      }
-
-      .menu-item i {
-        min-width: 25px;
-        text-align: center;
+        transition: background-color 0.3s;
       }
 
       .menu-item:hover {
@@ -92,192 +62,94 @@
       }
 
       .menu-item.active {
-        background-color: rgba(255, 255, 255, 0.2);
-        border-left: 4px solid var(--primary-color);
-      }
-
-      .sign-out {
-        margin-top: auto;
-        padding: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      .sign-out:hover {
-        background-color: rgba(255, 0, 0, 0.1);
-      }
-
-      .sign-out i {
-        margin-left: 10px;
-        color: #ff6b6b;
+        background-color: #3498db;
       }
 
       .main-content {
-        flex: 1;
+        flex-grow: 1;
         padding: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        background-color: #f4f7f6;
       }
 
-      .profile-card {
+      .professional-profile {
         background-color: white;
-        border-radius: 15px;
-        width: 100%;
-        max-width: 900px;
-        padding: 40px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        position: relative;
-      }
-
-      .card-title {
-        color: var(--primary-color);
-        font-size: 2.7rem;
-        text-align: center;
-        margin-bottom: 35px;
-        font-weight: 600;
-      }
-
-      .card-content {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-      }
-
-      .metrics-container {
-        flex: 1;
-        min-width: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-      }
-
-      .info-box {
-        background-color: var(--background-light);
-        padding: 25px;
-        border-radius: 10px;
-        text-align: center;
-        transition: transform 0.3s ease;
-      }
-
-      .info-box:hover {
-        transform: scale(1.03);
-      }
-
-      .info-title {
-        font-size: 1.2rem;
-        color: var(--secondary-color);
-        margin-bottom: 15px;
-      }
-
-      .info-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--primary-color);
-      }
-
-      .personal-info {
-        flex: 1;
-        min-width: 300px;
-        background-color: var(--background-light);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 30px;
-        border-radius: 10px;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
-      .personal-info-title {
-        font-size: 1.8rem;
-        margin-bottom: 25px;
-        text-align: center;
-        color: var(--secondary-color);
-      }
-
-      .personal-info-detail {
+      .profile-section-title {
+        font-size: 22px;
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
         margin-bottom: 20px;
-        font-size: 1.1rem;
+      }
+
+      .profile-row {
         display: flex;
+        margin-bottom: 15px;
         align-items: center;
       }
 
-      .personal-info-detail i {
-        margin-right: 15px;
-        color: var(--primary-color);
-        min-width: 25px;
-        text-align: center;
-      }
-
-      .address {
-        text-align: center;
-        margin-top: 25px;
+      .profile-label {
+        width: 200px;
         font-weight: bold;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
+        color: #34495e;
+      }
+
+      .profile-value {
+        flex-grow: 1;
+        color: #2c3e50;
       }
 
       .editable {
         display: none;
         width: 100%;
-        padding: 12px;
-        border: 2px solid var(--primary-color);
-        border-radius: 8px;
-        font-size: 1rem;
-        margin-bottom: 15px;
-        transition: border-color 0.3s ease;
-      }
-
-      .editable:focus {
-        outline: none;
-        border-color: var(--accent-color);
+        padding: 8px;
+        border: 1px solid #3498db;
+        border-radius: 4px;
       }
 
       .button-group {
         display: flex;
         justify-content: flex-end;
         margin-top: 20px;
+        gap: 10px;
       }
 
       .button-group button {
-        padding: 12px 25px;
+        padding: 10px 15px;
         border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        border-radius: 4px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        margin-left: 10px;
       }
 
       .edit-button {
-        background-color: var(--primary-color);
+        background-color: #3498db;
         color: white;
-      }
-
-      .edit-button:hover {
-        background-color: #2462ad;
       }
 
       .save-button {
-        display: none;
-        background-color: var(--accent-color);
+        background-color: #2ecc71;
         color: white;
-      }
-
-      .save-button:hover {
-        background-color: #218838;
+        display: none;
       }
 
       .cancel-button {
-        display: none;
-        background-color: var(--warning-color);
+        background-color: #e74c3c;
         color: white;
+        display: none;
       }
 
-      .cancel-button:hover {
-        background-color: #c82333;
+      .bio-section {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 20px;
+        line-height: 1.6;
       }
 
       #loading-overlay {
@@ -286,59 +158,28 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.5);
         display: none;
         justify-content: center;
         align-items: center;
-        z-index: 9999;
+        z-index: 1000;
       }
 
       .loading-spinner {
-        width: 60px;
-        height: 60px;
-        border: 5px solid var(--text-light);
-        border-top: 5px solid var(--primary-color);
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      .loading-text {
-        color: white;
-        font-size: 1.5rem;
-        margin-left: 20px;
-      }
-
-      @media (max-width: 768px) {
-        body {
-          flex-direction: column;
+        0% {
+          transform: rotate(0deg);
         }
-
-        .sidebar {
-          width: 100%;
-          flex-direction: row;
-          height: auto;
-        }
-
-        .profile-pic-container {
-          display: none;
-        }
-
-        .menu-item {
-          flex: 1;
-          justify-content: center;
-        }
-
-        .main-content {
-          padding: 15px;
-        }
-
-        .profile-card {
-          padding: 20px;
+        100% {
+          transform: rotate(360deg);
         }
       }
     </style>
@@ -346,95 +187,118 @@
   <body>
     <div id="loading-overlay">
       <div class="loading-spinner"></div>
-      <div class="loading-text">Signing out...</div>
     </div>
 
     <div class="sidebar">
-      <div class="profile-pic-container">
-        <div class="profile-pic">
-          <img src="doc1.jpg" alt="Doctor's profile picture" />
+      <div class="sidebar-header">
+        <img src="doc1.jpg" alt="Doctor's Profile" class="profile-pic" />
+        <h3 style="margin-top: 10px; color: white">Dr. Mohit Chopra</h3>
+      </div>
+      <div class="sidebar-menu">
+        <div class="menu-item active" id="profile-menu">
+          <i class="fas fa-user"></i> Professional Profile
         </div>
-      </div>
-      <div class="menu-item active" id="appointments-menu">
-        <i class="fas fa-calendar-alt"></i> Appointments
-      </div>
-      <div class="menu-item" id="experience-menu">
-        <i class="fas fa-briefcase"></i> Experience
-      </div>
-      <div class="menu-item" id="share-profile-menu">
-        <i class="fas fa-share-alt"></i> Share Profile
-      </div>
-      <div class="sign-out">
-        Sign out <i class="fa-solid fa-right-from-bracket"></i>
+        <div class="menu-item" id="appointments-menu">
+          <i class="fas fa-calendar-alt"></i> Appointments
+        </div>
+        <div class="menu-item" id="experience-menu">
+          <i class="fas fa-briefcase"></i> Experience
+        </div>
+        <div class="menu-item" id="share-profile-menu">
+          <i class="fas fa-share-alt"></i> Share Profile
+        </div>
+        <div class="menu-item" id="signout-menu">
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </div>
       </div>
     </div>
 
     <div class="main-content">
-      <div class="profile-card">
-        <h1 class="card-title">Doctor's Profile</h1>
+      <div class="professional-profile">
+        <h2 class="profile-section-title">Professional Profile</h2>
 
-        <div class="card-content">
-          <div class="metrics-container">
-            <div class="info-box">
-              <div class="info-title">Total Consultations</div>
-              <div class="info-value">501</div>
-            </div>
-
-            <div class="info-box">
-              <div class="info-title">Total Work Experience</div>
-              <div class="info-value">5 years</div>
-            </div>
-          </div>
-
-          <div class="personal-info">
-            <div class="personal-info-title">Personal Information</div>
-
-            <div class="personal-info-detail" id="name-display">
-              <i class="fas fa-user"></i> Dr Mohit Chopra, (MD in General Medicine)
-            </div>
-            <input
-              type="text"
-              class="editable"
-              id="name-edit"
-              value="Dr Mohit Chopra, (MD in General Medicine)"
-            />
-
-            <div class="personal-info-detail" id="age-display">
-              <i class="fas fa-birthday-cake"></i> 33 years
-            </div>
-            <input
-              type="text"
-              class="editable"
-              id="age-edit"
-              value="33 years"
-            />
-
-            <div class="personal-info-detail" id="phone-display">
-              <i class="fas fa-phone"></i> +91-XXXXXXXXXX
-            </div>
-            <input
-              type="text"
-              class="editable"
-              id="phone-edit"
-              value="+91-XXXXXXXXXX"
-            />
-
-            <div class="address" id="address-display">
-              <i class="fas fa-map-marker-alt"></i> 17/10 Old Rajendra Nagar, New Delhi-110060
-            </div>
-            <input
-              type="text"
-              class="editable editable-address"
-              id="address-edit"
-              value="17/10 Old Rajendra Nagar-110060"
-            />
-          </div>
+        <div class="profile-row">
+          <div class="profile-label">Full Name</div>
+          <div class="profile-value" id="name-display">Dr. Mohit Chopra</div>
+          <input
+            type="text"
+            class="editable"
+            id="name-edit"
+            value="Dr. Mohit Chopra"
+          />
         </div>
+        <div class="profile-row">
+          <div class="profile-label">Age</div>
+          <div class="profile-value" id="registration-display">35</div>
+          <input
+            type="text"
+            class="editable"
+            id="registration-edit"
+            value="DL/MD/2022/1234, Delhi Medical Council"
+          />
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">City</div>
+          <div class="profile-value" id="city-display">New Delhi</div>
+          <input
+            type="text"
+            class="editable"
+            id="city-edit"
+            value="New Delhi"
+          />
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Medical Speciality</div>
+          <div class="profile-value" id="speciality-display">
+            General Medicine
+          </div>
+          <input
+            type="text"
+            class="editable"
+            id="speciality-edit"
+            value="General Medicine"
+          />
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Gender</div>
+          <div class="profile-value">Male</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Educational Qualifications</div>
+          <div class="profile-value" id="education-display">
+            MD - General Medicine
+          </div>
+          <input
+            type="text"
+            class="editable"
+            id="education-edit"
+            value="MD - General Medicine"
+          />
+        </div>
+
+        <div class="bio-section" id="bio-display">
+          Dr. Mohit Chopra is an experienced General Medicine physician with 5
+          years of clinical experience. Passionate about patient care and
+          committed to providing comprehensive medical solutions. Specializes in
+          preventive healthcare and holistic patient management.
+        </div>
+        <textarea
+          class="editable"
+          id="bio-edit"
+          rows="4"
+          style="width: 100%; display: none; margin-top: 15px"
+        >
+Dr. Mohit Chopra is an experienced General Medicine physician with 5 years of clinical experience. Passionate about patient care and committed to providing comprehensive medical solutions. Specializes in preventive healthcare and holistic patient management.</textarea
+        >
 
         <div class="button-group">
           <button class="cancel-button" id="cancel-button">Cancel</button>
           <button class="save-button" id="save-button">Save Changes</button>
-          <button class="edit-button" id="edit-button">Edit Info</button>
+          <button class="edit-button" id="edit-button">Edit Profile</button>
         </div>
       </div>
     </div>
@@ -443,89 +307,89 @@
       document.addEventListener("DOMContentLoaded", function () {
         const { jsPDF } = window.jspdf;
 
+        // Edit mode functionality
         const editButton = document.getElementById("edit-button");
         const saveButton = document.getElementById("save-button");
         const cancelButton = document.getElementById("cancel-button");
 
-        // Field display elements
-        const nameDisplay = document.getElementById("name-display");
-        const ageDisplay = document.getElementById("age-display");
-        const phoneDisplay = document.getElementById("phone-display");
-        const addressDisplay = document.getElementById("address-display");
+        // Display elements
+        const displayElements = [
+          { display: "name-display", edit: "name-edit" },
+          { display: "city-display", edit: "city-edit" },
+          { display: "speciality-display", edit: "speciality-edit" },
+          { display: "education-display", edit: "education-edit" },
+          { display: "registration-display", edit: "registration-edit" },
+          { display: "bio-display", edit: "bio-edit" },
+        ];
 
-        // Field edit elements
-        const nameEdit = document.getElementById("name-edit");
-        const ageEdit = document.getElementById("age-edit");
-        const phoneEdit = document.getElementById("phone-edit");
-        const addressEdit = document.getElementById("address-edit");
+        // Store original values
+        const originalValues = {};
+        displayElements.forEach((el) => {
+          originalValues[el.display] = document.getElementById(
+            el.display
+          ).textContent;
+        });
 
-        // Store original values for cancel functionality
-        let originalValues = {
-          name: nameEdit.value,
-          age: ageEdit.value,
-          phone: phoneEdit.value,
-          address: addressEdit.value,
-        };
-
-        // Function to enter edit mode
+        // Enter edit mode
         function enterEditMode() {
-          [nameDisplay, ageDisplay, phoneDisplay, addressDisplay].forEach(el => el.style.display = "none");
-          [nameEdit, ageEdit, phoneEdit, addressEdit].forEach(el => el.style.display = "block");
+          displayElements.forEach((el) => {
+            const displayEl = document.getElementById(el.display);
+            const editEl = document.getElementById(el.edit);
+
+            displayEl.style.display = "none";
+            editEl.style.display = "block";
+
+            // Special handling for bio
+            if (el.display === "bio-display") {
+              editEl.value = displayEl.textContent.trim();
+            }
+          });
 
           editButton.style.display = "none";
           saveButton.style.display = "block";
           cancelButton.style.display = "block";
         }
 
-        // Function to exit edit mode
+        // Exit edit mode
         function exitEditMode() {
-          [nameDisplay, ageDisplay, phoneDisplay, addressDisplay].forEach(el => el.style.display = "flex");
-          [nameEdit, ageEdit, phoneEdit, addressEdit].forEach(el => el.style.display = "none");
+          displayElements.forEach((el) => {
+            const displayEl = document.getElementById(el.display);
+            const editEl = document.getElementById(el.edit);
+
+            displayEl.style.display = "block";
+            editEl.style.display = "none";
+          });
 
           editButton.style.display = "block";
           saveButton.style.display = "none";
           cancelButton.style.display = "none";
         }
 
-        // Function to save changes
+        // Save changes
         function saveChanges() {
-          // Validate inputs before saving
-          const validateInput = (input) => input.trim() !== "";
+          displayElements.forEach((el) => {
+            const displayEl = document.getElementById(el.display);
+            const editEl = document.getElementById(el.edit);
 
-          if (!validateInput(nameEdit.value) || !validateInput(ageEdit.value) || 
-              !validateInput(phoneEdit.value) || !validateInput(addressEdit.value)) {
-            alert("Please fill in all fields.");
-            return;
-          }
-
-          nameDisplay.innerHTML = `<i class="fas fa-user"></i> ${nameEdit.value}`;
-          ageDisplay.innerHTML = `<i class="fas fa-birthday-cake"></i> ${ageEdit.value}`;
-          phoneDisplay.innerHTML = `<i class="fas fa-phone"></i> ${phoneEdit.value}`;
-          addressDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${addressEdit.value}`;
-
-          originalValues = {
-            name: nameEdit.value,
-            age: ageEdit.value,
-            phone: phoneEdit.value,
-            address: addressEdit.value,
-          };
+            displayEl.textContent = editEl.value;
+          });
 
           exitEditMode();
         }
 
-        // Function to cancel changes
+        // Cancel changes
         function cancelChanges() {
-          nameEdit.value = originalValues.name;
-          ageEdit.value = originalValues.age;
-          phoneEdit.value = originalValues.phone;
-          addressEdit.value = originalValues.address;
+          displayElements.forEach((el) => {
+            const displayEl = document.getElementById(el.display);
+            displayEl.textContent = originalValues[el.display];
+          });
 
           exitEditMode();
         }
 
-        // Function to generate PDF
+        // Generate PDF
         function generatePDF() {
-          const profileCard = document.querySelector(".profile-card");
+          const profileCard = document.querySelector(".professional-profile");
 
           html2canvas(profileCard, { scale: 2 }).then((canvas) => {
             const pdf = new jsPDF("p", "mm", "a4");
@@ -539,21 +403,41 @@
           });
         }
 
-        // Event listeners
+        // Event Listeners
         editButton.addEventListener("click", enterEditMode);
         saveButton.addEventListener("click", saveChanges);
         cancelButton.addEventListener("click", cancelChanges);
 
-        // Menu navigation
-        document.getElementById("appointments-menu").addEventListener("click", function () {
-          window.location.href = "doc_appointments.html";
-        });
+        // Menu Navigation
+        document
+          .getElementById("appointments-menu")
+          .addEventListener("click", function () {
+            window.location.href = "doc_appointments.html";
+          });
 
-        document.getElementById("experience-menu").addEventListener("click", function () {
-          window.location.href = "doc_experience.html";
-        });
+        document
+          .getElementById("experience-menu")
+          .addEventListener("click", function () {
+            window.location.href = "doc_experience.html";
+          });
 
-        document.getElementById("share-profile-menu").addEventListener("click", generatePDF);
+        document
+          .getElementById("share-profile-menu")
+          .addEventListener("click", generatePDF);
+
+        // Sign Out
+        document
+          .getElementById("signout-menu")
+          .addEventListener("click", function () {
+            if (confirm("Are you sure you want to sign out?")) {
+              const loadingOverlay = document.getElementById("loading-overlay");
+              loadingOverlay.style.display = "flex";
+
+              setTimeout(function () {
+                window.location.href = "index.html";
+              }, 2000);
+            }
+          });
 
         // Active menu item styling
         const menuItems = document.querySelectorAll(".menu-item");
@@ -562,18 +446,6 @@
             menuItems.forEach((i) => i.classList.remove("active"));
             this.classList.add("active");
           });
-        });
-
-        // Sign out functionality
-        document.querySelector(".sign-out").addEventListener("click", function () {
-          if (confirm("Are you sure you want to sign out?")) {
-            const loadingOverlay = document.getElementById("loading-overlay");
-            loadingOverlay.style.display = "flex";
-
-            setTimeout(function () {
-              window.location.href = "index.html";
-            }, 2000);
-          }
         });
       });
     </script>
