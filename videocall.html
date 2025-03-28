@@ -185,6 +185,25 @@
         box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
       }
 
+      .notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 18px;
+        z-index: 100;
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
       @media (max-width: 768px) {
         .user-video {
           width: 100px;
@@ -280,10 +299,17 @@
         }
       }
 
+      // Show a non-blocking notification
+      function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+      }
+
       function endCall() {
-        videoPlaceholder.innerText = "Call ended";
-        videoPlaceholder.style.display = "flex";
-        remoteVideo.style.display = "none";
+        // Show notification about redirecting
+        showNotification("Redirecting to homepage...");
 
         // Stop all media tracks
         if (userStream) {
@@ -295,25 +321,26 @@
         userVideo.srcObject = null;
         remoteVideo.srcObject = null;
 
-        // Reset button states
-        isAudioMuted = false;
-        isVideoOff = false;
-        muteButton.innerText = "🎤";
-        videoButton.innerText = "📹";
-
-        // Go back to the main page after a delay
+        // Redirect to cards.html after 1 second delay
         setTimeout(() => {
-          window.location.href = "video.html";
-        }, 2000);
+          window.location.href = "cards.html";
+        }, 1000);
       }
 
       function goHome() {
+        // Show notification about redirecting
+        showNotification("Redirecting to homepage...");
+
         // First end the call if active
         if (userStream) {
-          endCall();
-        } else {
-          window.location.href = "video.html";
+          userStream.getTracks().forEach((track) => track.stop());
+          userStream = null;
         }
+        
+        // Redirect to cards.html after 1 second delay
+        setTimeout(() => {
+          window.location.href = "cards.html";
+        }, 1000);
       }
 
       // Mute/unmute audio
