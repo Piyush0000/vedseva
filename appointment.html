@@ -265,15 +265,9 @@
         }
       }
 
-      .appointments-list {
-        margin-top: 15px;
-        max-height: 200px;
-        overflow-y: auto;
-      }
-
       .appointment-item {
         padding: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: #e0e0e0;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -312,7 +306,6 @@
   <body>
     <div class="header">
       <h1>Doctor Availability</h1>
-      <span class="time">12:03 AM</span>
     </div>
 
     <div class="filters">
@@ -405,6 +398,8 @@
       </div>
     </div>
 
+    <div class="appointments-list" id="appointmentsList"></div>
+
     <div class="success-message" id="successMessage">
       Appointment booked successfully!
     </div>
@@ -487,10 +482,6 @@
             successMessage.style.display = "block";
             successMessage.textContent = "Appointment booked successfully!";
 
-            setTimeout(() => {
-              successMessage.style.display = "none";
-            }, 3000);
-
             // Update booked slot
             const selectedSlot = document.querySelector(".time-slot.selected");
             if (selectedSlot) {
@@ -505,6 +496,11 @@
 
             // Refresh appointment list display
             displayAppointments();
+
+            // Add redirect after 1.2 seconds
+            setTimeout(() => {
+              window.location.href = "cards.html";
+            }, 1200);
           }
         });
       });
@@ -655,61 +651,19 @@
           }
 
           if (appointmentTime < now) {
-            appointmentEl.classList.add("expired");
+            appointmentEl.classList.add();
           }
-
-          appointmentEl.innerHTML = `
-            <div class="appointment-info">
-              <p><strong>${appointment.doctorName}</strong></p>
-              <p>Date: ${appointment.date}</p>
-              <p>Time: ${appointment.time}</p>
-              <p>Status: ${appointmentTime < now ? "Expired" : "Upcoming"}</p>
-            </div>
-            <div class="appointment-actions">
-              <button class="delete-btn" data-time="${appointmentTime}">Delete</button>
-            </div>
-          `;
 
           appointmentsList.appendChild(appointmentEl);
         });
-
-        // Add event listeners to delete buttons
-        document.querySelectorAll(".delete-btn").forEach((button) => {
-          button.addEventListener("click", function () {
-            const appointmentTime = this.getAttribute("data-time");
-            deleteSpecificAppointment(appointmentTime);
-          });
-        });
-
-        // Update expired count
-        checkExpiredAppointments();
       }
 
-      // Function to delete a specific appointment
-      function deleteSpecificAppointment(timestamp) {
-        let appointments =
-          JSON.parse(localStorage.getItem("appointments")) || [];
+      setTimeout(() => {
+        successMessage.style.display = "none";
+      }, 3000);
 
-        // Filter out the specific appointment
-        appointments = appointments.filter((appointment) => {
-          return (appointment.timestamp || 0).toString() !== timestamp;
-        });
-
-        // Save updated appointments
-        localStorage.setItem("appointments", JSON.stringify(appointments));
-
-        // Show success message
-        const successMessage = document.getElementById("successMessage");
-        successMessage.textContent = "Appointment deleted successfully!";
-        successMessage.style.display = "block";
-
-        setTimeout(() => {
-          successMessage.style.display = "none";
-        }, 3000);
-
-        // Refresh the appointments list
-        displayAppointments();
-      }
+      // Refresh the appointments list
+      displayAppointments();
 
       // Add event listener to cleanup button
       document
@@ -727,14 +681,6 @@
       }
 
       // Initialize
-      updateTime();
-      setInterval(updateTime, 60000);
-
-      // Initial check and display of appointments
-      displayAppointments();
-
-      // Check for expired appointments periodically
-      setInterval(checkExpiredAppointments, 60000);
     </script>
   </body>
 </html>
