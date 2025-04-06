@@ -32,12 +32,6 @@ This project aims to bridge the healthcare gap in rural areas by making medical 
 - *JavaScript*
 - *Firebase*
 
-## Contributors
-- *Piyush Rathore*
-- *Kanishka Narang*
-- *Aryan Gupta*
-
-
 
 
 
