@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Vedseva - NGO Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #81c784;
+        --accent-color: #2e7d32;
+        --bg-color: #f8f9fa;
+        --text-color: #333;
+        --light-text: #6c757d;
+        --white: #ffffff;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      header {
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .state-display {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 5px;
+        letter-spacing: 1px;
+      }
+
+      @media (max-width: 768px) {
+        .state-display {
+          position: static;
+          transform: none;
+          text-align: center;
+          margin-top: 10px;
+          width: 100%;
+        }
+
+        header {
+          flex-direction: column;
+          padding: 1rem;
+        }
+
+        .logo {
+          margin-bottom: 10px;
+        }
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      a {
+        color: inherit;
+        /* or use a specific color like 'black' */
+        text-decoration: none;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+      }
+
+      header {
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 50px;
+        margin-right: 10px;
+      }
+
+      .logo h1 {
+        font-size: 24px;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .main-container {
+        display: flex;
+        height: calc(100vh - 72px);
+      }
+
+      nav {
+        width: 200px;
+        background-color: var(--white);
+        box-shadow: var(--shadow);
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      nav ul {
+        list-style: none;
+      }
+
+      nav li {
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      nav li:hover,
+      nav li.active {
+        background-color: #e8f5e9;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .sign-out {
+        padding: 10px 20px;
+        cursor: pointer;
+        color: var(--light-text);
+        display: flex;
+        align-items: center;
+        transition: color 0.3s;
+      }
+
+      .sign-out:hover {
+        color: var(--primary-color);
+      }
+
+      .sign-out i {
+        margin-left: 8px;
+        margin-top: 5px;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .dashboard-header {
+        margin-bottom: 20px;
+      }
+
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+      }
+
+      .card-header {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+
+      .card-value {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .map-disease-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        height: 500px;
+      }
+
+      .map-container {
+        flex: 2;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .map {
+        width: 100%;
+        height: 100%;
+        background-color: #e8f5e9;
+      }
+
+      .disease-panel {
+        flex: 1;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .disease-item {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .disease-item:last-child {
+        border-bottom: none;
+      }
+
+      .disease-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+      }
+
+      .disease-count {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .disease-info {
+        font-size: 14px;
+        color: var(--light-text);
+      }
+
+      .graphs-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .graph-card {
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+        height: 300px;
+      }
+
+      .graph-placeholder {
+        width: 100%;
+        height: 230px;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--light-text);
+        border-radius: 5px;
+      }
+
+      /* Marker style for map */
+      .marker {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgba(255, 0, 0, 0.7);
+        border: 2px solid white;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+      }
+
+      .marker-tooltip {
+        position: absolute;
+        background-color: white;
+        border-radius: 4px;
+        padding: 5px 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        font-size: 12px;
+        z-index: 100;
+        display: none;
+      }
+
+      .marker:hover .marker-tooltip {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          flex-direction: column;
+          height: auto;
+        }
+
+        nav {
+          width: 100%;
+          padding: 10px 0;
+        }
+
+        .map-disease-container {
+          flex-direction: column;
+          height: auto;
+        }
+
+        .map-container {
+          height: 300px;
+        }
+
+        .graphs-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <img src="logonew.png" alt="Vedseva Logo" />
+        <h1>वैदSeva NGO Portal</h1>
+      </div>
+      <div class="state-display" id="stateDisplay"></div>
+    </header>
+
+    <div class="main-container">
+      <nav>
+        <ul>
+          <li class="active">Dashboard</li>
+          <li><a href="form.html">Active Areas</a></li>
+          <li><a href="prediction.html">Critical Alerts</a></li>
+          <li>Settings</li>
+        </ul>
+
+        <div class="sign-out">
+          Sign Out <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+      </nav>
+
+      <div class="content">
+        <div class="dashboard-header">
+          <h2>Disease Monitoring Dashboard</h2>
+          <p>Track and monitor disease outbreaks in your operational areas</p>
+        </div>
+
+        <div class="dashboard-cards">
+          <div class="card">
+            <div class="card-header">Total Cases Reported</div>
+            <div class="card-value">1,245</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Active Areas</div>
+            <div class="card-value">8</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Critical Alerts</div>
+            <div class="card-value">3</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Healthcare Partners</div>
+            <div class="card-value">12</div>
+          </div>
+        </div>
+
+        <div class="map-disease-container">
+          <div class="map-container">
+            <div id="disease-map" style="height: 500px"></div>
+          </div>
+
+          <div class="disease-panel" id="diseasePanel">
+            <h3>Disease Information</h3>
+            <div class="disease-item">
+              <div class="disease-name">Malaria</div>
+              <div class="disease-count">145 cases</div>
+              <div class="disease-info">
+                Primary vector: Female Anopheles mosquito. Most prevalent in
+                northern districts. Symptoms include high fever, chills, and
+                fatigue.
+              </div>
+            </div>
+            <div class="disease-item">
+              <div class="disease-name">Dengue</div>
+              <div class="disease-count">78 cases</div>
+              <div class="disease-info">
+                Transmitted by Aedes mosquitoes. Recent spike in urban areas
+                following monsoon season. Symptoms include high fever, severe
+                headache, pain behind the eyes.
+              </div>
+            </div>
+            <div class="disease-item">
+              <div class="disease-name">Tuberculosis</div>
+              <div class="disease-count">56 cases</div>
+              <div class="disease-info">
+                Airborne bacterial infection affecting primarily lungs. Higher
+                prevalence in densely populated areas. Symptoms include
+                persistent cough, weight loss, night sweats.
+              </div>
+            </div>
+            <div class="disease-item">
+              <div class="disease-name">Cholera</div>
+              <div class="disease-count">29 cases</div>
+              <div class="disease-info">
+                Caused by contaminated water or food. Recent outbreak after
+                flooding in coastal regions. Symptoms include severe watery
+                diarrhea, vomiting, dehydration.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="graphs-container">
+          <div class="graph-card">
+            <h3>Disease Trends (Monthly)</h3>
+            <canvas id="trends-graph"></canvas>
+          </div>
+
+          <div class="graph-card">
+            <h3>Age Distribution of Cases</h3>
+            <canvas id="age-graph"></canvas>
+          </div>
+
+          <div class="graph-card">
+            <h3>Treatment Response Rates</h3>
+            <canvas id="treatment-graph"></canvas>
+          </div>
+
+          <div class="graph-card">
+            <h3>Resource Allocation</h3>
+            <canvas id="resource-graph"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function to initialize the charts
+      function initCharts() {
+        // --- Disease Trends (Monthly) ---
+        new Chart(document.getElementById("trends-graph").getContext("2d"), {
+          type: "line",
+          data: {
+            labels: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+            datasets: [
+              {
+                label: "Malaria Cases",
+                data: [50, 60, 75, 70, 80, 90, 100, 95, 85, 70, 65, 60],
+                borderColor: "#e91e63",
+                fill: false,
+              },
+              {
+                label: "Dengue Cases",
+                data: [30, 40, 55, 50, 60, 70, 80, 75, 65, 50, 45, 40],
+                borderColor: "#ffc107",
+                fill: false,
+              },
+              {
+                label: "Flu Cases",
+                data: [10, 40, 35, 50, 45, 60, 75, 85, 65, 30, 45, 40],
+                borderColor: "#pink",
+                fill: false,
+              },
+              {
+                label: "Diabetes Cases",
+                data: [40, 45, 30, 65, 85, 75, 60, 45, 50, 35, 40, 10],
+                borderColor: "magenta",
+                fill: false,
+              },
+              {
+                label: "HIV Cases",
+                data: [40, 45, 50, 65, 75, 80, 70, 60, 50, 55, 40, 30],
+                borderColor: "brown",
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // --- Age Distribution of Cases ---
+        new Chart(document.getElementById("age-graph").getContext("2d"), {
+          type: "bar",
+          data: {
+            labels: ["0-10", "11-20", "21-30", "31-40", "41-50", "51+"],
+            datasets: [
+              {
+                label: "Number of Cases",
+                data: [120, 200, 180, 150, 100, 80],
+                backgroundColor: "#4caf50",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // --- Treatment Response Rates ---
+        new Chart(document.getElementById("treatment-graph").getContext("2d"), {
+          type: "pie",
+          data: {
+            labels: ["Recovered", "Ongoing", "Unresponsive"],
+            datasets: [
+              {
+                data: [70, 20, 10],
+                backgroundColor: ["#66bb6a", "#ffa726", "#ef5350"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+          },
+        });
+
+        // --- Resource Allocation ---
+        new Chart(document.getElementById("resource-graph").getContext("2d"), {
+          type: "doughnut",
+          data: {
+            labels: ["Medical Staff", "Supplies", "Beds", "Funding"],
+            datasets: [
+              {
+                data: [300, 250, 100, 150],
+                backgroundColor: ["#1e88e5", "#43a047", "#d81b60", "#ffca28"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+          },
+        });
+      }
+
+      const zonesData = [
+        {
+          center: {
+            lat: 30,
+            lng: 75,
+          },
+          radius: 50,
+          risk: "red",
+          disease: "Malaria",
+          cases: 145,
+        }, // Example: High risk, lots of malaria
+        {
+          center: {
+            lat: 28,
+            lng: 77,
+          },
+          radius: 40,
+          risk: "yellow",
+          disease: "Dengue",
+          cases: 78,
+        }, // Example: Medium risk, some dengue
+        {
+          center: {
+            lat: 25,
+            lng: 80,
+          },
+          radius: 60,
+          risk: "green",
+          disease: "Tuberculosis",
+          cases: 56,
+        }, // Example: Low risk, manageable TB
+        {
+          center: {
+            lat: 22,
+            lng: 79,
+          },
+          radius: 30,
+          risk: "yellow",
+          disease: "Cholera",
+          cases: 29,
+        },
+        {
+          center: {
+            lat: 32,
+            lng: 74,
+          },
+          radius: 55,
+          risk: "red",
+          disease: "Flu",
+          cases: 210,
+        },
+        {
+          center: {
+            lat: 29,
+            lng: 78,
+          },
+          radius: 45,
+          risk: "green",
+          disease: "Typhoid",
+          cases: 33,
+        },
+        // Added zones for Sikkim, Uttarakhand, and Himachal Pradesh
+        {
+          center: {
+            lat: 27.5,
+            lng: 88.5,
+          },
+          radius: 35,
+          risk: "yellow",
+          disease: "Diarrheal Diseases",
+          cases: 42,
+        }, // Sikkim
+        {
+          center: {
+            lat: 30.5,
+            lng: 79,
+          },
+          radius: 40,
+          risk: "green",
+          disease: "Respiratory Infections",
+          cases: 68,
+        }, // Uttarakhand
+        {
+          center: {
+            lat: 32,
+            lng: 77,
+          },
+          radius: 45,
+          risk: "yellow",
+          disease: "Typhoid",
+          cases: 51,
+        }, // Himachal Pradesh
+      ];
+
+      function getRiskColor(risk) {
+        switch (risk) {
+          case "red":
+            return "rgba(255, 0, 0, 0.5)"; // Semi-transparent red
+          case "yellow":
+            return "rgba(255, 255, 0, 0.5)"; // Semi-transparent yellow
+          case "green":
+            return "rgba(0, 255, 0, 0.5)"; // Semi-transparent green
+          default:
+            return "rgba(128, 128, 128, 0.5)"; // Default to gray
+        }
+      }
+      function initMap() {
+        // Define India's approximate bounds (you might need to fine-tune these)
+        const indiaBounds = [
+          [8.0416, 68.1135], // Southwest corner (approx)
+          [37.0902, 97.4203], // Northeast corner (approx)
+        ];
+
+        const map = L.map("disease-map", {
+          maxBounds: indiaBounds,
+          maxBoundsViscosity: 0.8, // Keep the user within the bounds
+        }).setView([22, 79], 5); // Center on India, zoom level 5
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+
+        zonesData.forEach((zone) => {
+          //  Check if the zone's coordinates are within India's bounds
+          if (isCoordinateWithinBounds(zone.center, indiaBounds)) {
+            const color = getRiskColor(zone.risk);
+            L.circle([zone.center.lat, zone.center.lng], {
+              radius: zone.radius * 1000,
+              fillColor: color,
+              fillOpacity: 0.5,
+              color: color.replace("0.5", "1"),
+              weight: 1,
+            }).addTo(map).bindPopup(`
+                              <b>${zone.disease}</b><br>
+                              Cases: ${zone.cases}<br>
+                              Risk: ${zone.risk}
+                          `);
+          }
+        });
+      }
+
+      // Function to check if a coordinate is within the given bounds
+      function isCoordinateWithinBounds(coord, bounds) {
+        const lat = coord.lat;
+        const lng = coord.lng;
+        const south = bounds[0][0];
+        const west = bounds[0][1];
+        const north = bounds[1][0];
+        const east = bounds[1][1];
+
+        return lat >= south && lat <= north && lng >= west && lng <= east;
+      }
+
+      // Function to get the selected state from localStorage
+      function getSelectedState() {
+        return localStorage.getItem("selectedState") || "All States";
+      }
+
+      // Function to display the selected state
+      function displaySelectedState() {
+        const stateDisplay = document.getElementById("stateDisplay");
+        stateDisplay.textContent = getSelectedState();
+      }
+
+      // Call functions to initialize dashboard elements
+      document.addEventListener("DOMContentLoaded", function () {
+        displaySelectedState();
+        initCharts();
+        initMap();
+        // Add any other initialization logic here, like fetching initial data for cards and map
+      });
+
+      // Navigation event listeners (you'll need to adapt these based on your actual navigation)
+      document.querySelectorAll("nav ul li").forEach((item) => {
+        item.addEventListener("click", function () {
+          document
+            .querySelectorAll("nav ul li")
+            .forEach((li) => li.classList.remove("active"));
+          this.classList.add("active");
+          const page = this.textContent;
+          console.log(`Navigating to ${page}`);
+          // In a real application, you would load content based on the selected page
+        });
+      });
+
+      document
+        .querySelector(".sign-out")
+        .addEventListener("click", function () {
+          localStorage.removeItem("loggedIn");
+          localStorage.removeItem("selectedState");
+          // Redirect to the login page (assuming your login page is named 'ngo_login.html')
+          window.location.href = "ngo_login.html";
+        });
+    </script>
+  </body>
+</html>

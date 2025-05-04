@@ -84,7 +84,7 @@
 
       .container {
         width: 100%;
-        max-width: 700px;
+        max-width: 900px;
         background-color: rgba(255, 255, 255, 0.95);
         padding: 30px 40px;
         border-radius: 14px;
@@ -451,6 +451,14 @@
               healthcare services
             </p>
           </div>
+          <div class="option-card" id="ngo-option">
+            <div class="option-icon">🏥</div>
+            <h3>NGO</h3>
+            <p>
+              Login as an NGO partner to manage healthcare programs and
+              community initiatives
+            </p>
+          </div>
         </div>
 
         <button class="submit-btn" id="submit-btn" disabled>Submit</button>
@@ -471,6 +479,7 @@
       // DOM elements
       const doctorOption = document.getElementById("doctor-option");
       const patientOption = document.getElementById("patient-option");
+      const ngoOption = document.getElementById("ngo-option");
       const submitBtn = document.getElementById("submit-btn");
 
       // Selection state
@@ -485,18 +494,26 @@
         selectOption("patient");
       });
 
+      ngoOption.addEventListener("click", function () {
+        selectOption("ngo");
+      });
+
       function selectOption(option) {
-        // Reset both options
+        // Reset all options
         doctorOption.classList.remove("selected");
         patientOption.classList.remove("selected");
+        ngoOption.classList.remove("selected");
 
         // Set selected option
         if (option === "doctor") {
           doctorOption.classList.add("selected");
           selectedOption = "doctor";
-        } else {
+        } else if (option === "patient") {
           patientOption.classList.add("selected");
           selectedOption = "patient";
+        } else if (option === "ngo") {
+          ngoOption.classList.add("selected");
+          selectedOption = "ngo";
         }
 
         // Enable submit button
@@ -506,7 +523,7 @@
       // Submit button action
       submitBtn.addEventListener("click", function () {
         if (!selectedOption) {
-          alert("Please select Doctor or Patient to continue");
+          alert("Please select Doctor, Patient, or NGO to continue");
           return;
         }
 
@@ -521,6 +538,8 @@
           window.location.href = "doclogin.html";
         } else if (selectedOption === "patient") {
           window.location.href = "home.html";
+        } else if (selectedOption === "ngo") {
+          window.location.href = "ngo_login.html";
         }
       });
 

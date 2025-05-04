@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Health District Prediction Model</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom/dist/chartjs-plugin-zoom.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+      }
+      .prediction-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 45%;
+        min-width: 400px;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      h2 {
+        color: #444;
+        margin-top: 0;
+      }
+      select {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        width: 100%;
+        font-size: 16px;
+      }
+      .metrics {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+        flex-wrap: wrap;
+      }
+      .metric {
+        text-align: center;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+        flex: 1;
+        margin: 5px;
+        min-width: 120px;
+      }
+      .metric-value {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 18px;
+      }
+      .metric-title {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>District Health Prediction Model</h1>
+
+    <div class="container">
+      <div class="prediction-container">
+        <h2>Sikkim - <span id="sikkimDistrictName">Gangtok</span></h2>
+        <select id="sikkimDistrict">
+          <option value="Gangtok">Gangtok</option>
+          <option value="Mangan">Mangan</option>
+          <option value="Namchi">Namchi</option>
+          <option value="Gyalshing">Gyalshing</option>
+          <option value="Pakyong">Pakyong</option>
+          <option value="Soreng">Soreng</option>
+        </select>
+        <canvas id="sikkimChart"></canvas>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-title">No. of Kiosks</div>
+            <div class="metric-value" id="sikkimKiosks">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Doctor Ratio</div>
+            <div class="metric-value" id="sikkimDoctors">-</div>
+            <div>per 10,000 people</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Infant Mortality</div>
+            <div class="metric-value" id="sikkimInfantMortality">-</div>
+            <div>per 1,000 births</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Life Expectancy</div>
+            <div class="metric-value" id="sikkimLifeExpectancy">-</div>
+            <div>years</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prediction-container">
+        <h2>Uttarakhand - <span id="uttarakhandDistrictName">Almora</span></h2>
+        <select id="uttarakhandDistrict">
+          <option value="Almora">Almora</option>
+          <option value="Bageshwar">Bageshwar</option>
+          <option value="Chamoli">Chamoli</option>
+          <option value="Champawat">Champawat</option>
+          <option value="Dehradun">Dehradun</option>
+          <option value="Haridwar">Haridwar</option>
+          <option value="Nainital">Nainital</option>
+          <option value="Pauri Garhwal">Pauri Garhwal</option>
+          <option value="Pithoragarh">Pithoragarh</option>
+          <option value="Rudraprayag">Rudraprayag</option>
+          <option value="Tehri Garhwal">Tehri Garhwal</option>
+          <option value="Udham Singh Nagar">Udham Singh Nagar</option>
+          <option value="Uttarkashi">Uttarkashi</option>
+        </select>
+        <canvas id="uttarakhandChart"></canvas>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-title">No. of Kiosks</div>
+            <div class="metric-value" id="uttarakhandKiosks">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Doctor Ratio</div>
+            <div class="metric-value" id="uttarakhandDoctors">-</div>
+            <div>per 10,000 people</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Infant Mortality</div>
+            <div class="metric-value" id="uttarakhandInfantMortality">-</div>
+            <div>per 1,000 births</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Life Expectancy</div>
+            <div class="metric-value" id="uttarakhandLifeExpectancy">-</div>
+            <div>years</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Health data for predictions
+      const sikkimHealthData = {
+        Gangtok: {
+          kiosks: 5,
+          doctors: 12,
+          infantMortality: 18,
+          lifeExpectancy: 72.5,
+          diseaseTrend: [100, 105, 110, 115, 120, 125, 130, 135, 140, 145], // Disease prevalence per 1000
+          predictedTrend: [150, 155, 160, 165, 170], // Example predicted trend
+        },
+        Mangan: {
+          kiosks: 2,
+          doctors: 6,
+          infantMortality: 28,
+          lifeExpectancy: 68.2,
+          diseaseTrend: [130, 135, 140, 145, 150, 155, 160, 165, 170, 175],
+          predictedTrend: [180, 185, 190, 195, 200],
+        },
+        Namchi: {
+          kiosks: 3,
+          doctors: 8,
+          infantMortality: 22,
+          lifeExpectancy: 70.8,
+          diseaseTrend: [110, 115, 120, 125, 130, 135, 140, 145, 150, 155],
+          predictedTrend: [160, 165, 170, 175, 180],
+        },
+        Gyalshing: {
+          kiosks: 2,
+          doctors: 7,
+          infantMortality: 25,
+          lifeExpectancy: 69.5,
+          diseaseTrend: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165],
+          predictedTrend: [170, 175, 180, 185, 190],
+        },
+        Pakyong: {
+          kiosks: 1,
+          doctors: 5,
+          infantMortality: 30,
+          lifeExpectancy: 67.8,
+          diseaseTrend: [140, 145, 150, 155, 160, 165, 170, 175, 180, 185],
+          predictedTrend: [190, 195, 200, 205, 210],
+        },
+        Soreng: {
+          kiosks: 2,
+          doctors: 6,
+          infantMortality: 27,
+          lifeExpectancy: 68.9,
+          diseaseTrend: [125, 130, 135, 140, 145, 150, 155, 160, 165, 170],
+          predictedTrend: [175, 180, 185, 190, 195],
+        },
+      };
+
+      const uttarakhandHealthData = {
+        Almora: {
+          kiosks: 4,
+          doctors: 10,
+          infantMortality: 25,
+          lifeExpectancy: 70.3,
+          diseaseTrend: [115, 120, 125, 130, 135, 140, 145, 150, 155, 160],
+          predictedTrend: [165, 170, 175, 180, 185],
+        },
+        Bageshwar: {
+          kiosks: 2,
+          doctors: 8,
+          infantMortality: 30,
+          lifeExpectancy: 68.7,
+          diseaseTrend: [130, 135, 140, 145, 150, 155, 160, 165, 170, 175],
+          predictedTrend: [180, 185, 190, 195, 200],
+        },
+        Chamoli: {
+          kiosks: 3,
+          doctors: 9,
+          infantMortality: 28,
+          lifeExpectancy: 69.2,
+          diseaseTrend: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165],
+          predictedTrend: [170, 175, 180, 185, 190],
+        },
+        Champawat: {
+          kiosks: 2,
+          doctors: 7,
+          infantMortality: 32,
+          lifeExpectancy: 67.9,
+          diseaseTrend: [135, 140, 145, 150, 155, 160, 165, 170, 175, 180],
+          predictedTrend: [185, 190, 195, 200, 205],
+        },
+        Dehradun: {
+          kiosks: 10,
+          doctors: 18,
+          infantMortality: 15,
+          lifeExpectancy: 74.8,
+          diseaseTrend: [80, 85, 90, 95, 100, 105, 110, 115, 120, 125],
+          predictedTrend: [130, 135, 140, 145, 150],
+        },
+        Haridwar: {
+          kiosks: 8,
+          doctors: 15,
+          infantMortality: 20,
+          lifeExpectancy: 72.1,
+          diseaseTrend: [90, 95, 100, 105, 110, 115, 120, 125, 130, 135],
+          predictedTrend: [140, 145, 150, 155, 160],
+        },
+        Nainital: {
+          kiosks: 7,
+          doctors: 14,
+          infantMortality: 18,
+          lifeExpectancy: 73.5,
+          diseaseTrend: [85, 90, 95, 100, 105, 110, 115, 120, 125, 130],
+          predictedTrend: [135, 140, 145, 150, 155],
+        },
+        "Pauri Garhwal": {
+          kiosks: 3,
+          doctors: 9,
+          infantMortality: 26,
+          lifeExpectancy: 70.8,
+          diseaseTrend: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165],
+          predictedTrend: [170, 175, 180, 185, 190],
+        },
+        Pithoragarh: {
+          kiosks: 3,
+          doctors: 8,
+          infantMortality: 29,
+          lifeExpectancy: 69.5,
+          diseaseTrend: [125, 130, 135, 140, 145, 150, 155, 160, 165, 170],
+          predictedTrend: [175, 180, 185, 190, 195],
+        },
+        Rudraprayag: {
+          kiosks: 1,
+          doctors: 7,
+          infantMortality: 31,
+          lifeExpectancy: 68.3,
+          diseaseTrend: [140, 145, 150, 155, 160, 165, 170, 175, 180, 185],
+          predictedTrend: [190, 195, 200, 205, 210],
+        },
+        "Tehri Garhwal": {
+          kiosks: 3,
+          doctors: 9,
+          infantMortality: 27,
+          lifeExpectancy: 70.1,
+          diseaseTrend: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165],
+          predictedTrend: [170, 175, 180, 185, 190],
+        },
+        "Udham Singh Nagar": {
+          kiosks: 6,
+          doctors: 12,
+          infantMortality: 22,
+          lifeExpectancy: 71.9,
+          diseaseTrend: [100, 105, 110, 115, 120, 125, 130, 135, 140, 145],
+          predictedTrend: [150, 155, 160, 165, 170],
+        },
+        Uttarkashi: {
+          kiosks: 2,
+          doctors: 7,
+          infantMortality: 33,
+          lifeExpectancy: 67.5,
+          diseaseTrend: [145, 150, 155, 160, 165, 170, 175, 180, 185, 190],
+          predictedTrend: [195, 200, 205, 210, 215],
+        },
+      };
+
+      // Years for disease trend
+      const years = [
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026",
+        "2027",
+      ];
+      const futureYears = ["2028", "2029", "2030", "2031", "2032"];
+
+      // Initialize charts
+      const sikkimCtx = document.getElementById("sikkimChart").getContext("2d");
+      const uttarakhandCtx = document
+        .getElementById("uttarakhandChart")
+        .getContext("2d");
+
+      let sikkimChart = new Chart(sikkimCtx, {
+        type: "line",
+        data: {
+          labels: years.concat(futureYears), // Combine past and future years
+          datasets: [
+            {
+              label: "Disease Prevalence (per 1000)",
+              data: sikkimHealthData.Gangtok.diseaseTrend.concat(
+                sikkimHealthData.Gangtok.predictedTrend
+              ),
+              borderColor: "rgba(231, 76, 60, 1)",
+              backgroundColor: "rgba(231, 76, 60, 0.1)",
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+            },
+            {
+              label: "Predicted Trend",
+              data: new Array(years.length)
+                .fill(null)
+                .concat(sikkimHealthData.Gangtok.predictedTrend),
+              borderColor: "rgba(231, 76, 60, 0.5)",
+              borderDash: [5, 5],
+              borderWidth: 2,
+              tension: 0.4,
+              pointRadius: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Disease Trend and Prediction",
+            },
+            tooltip: {
+              mode: "index",
+              intersect: false,
+            },
+            zoom: {
+              zoom: {
+                wheel: {
+                  enabled: true,
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: "x",
+              },
+              pan: {
+                enabled: true,
+                mode: "x",
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 50,
+              max: 220,
+              title: {
+                display: true,
+                text: "Cases per 1000 population",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Year",
+              },
+              ticks: {
+                autoSkip: false,
+                maxRotation: 50,
+                minRotation: 30,
+              },
+            },
+          },
+        },
+      });
+
+      let uttarakhandChart = new Chart(uttarakhandCtx, {
+        type: "line",
+        data: {
+          labels: years.concat(futureYears),
+          datasets: [
+            {
+              label: "Disease Prevalence (per 1000)",
+              data: uttarakhandHealthData.Almora.diseaseTrend.concat(
+                uttarakhandHealthData.Almora.predictedTrend
+              ),
+              borderColor: "rgba(41, 128, 185, 1)",
+              backgroundColor: "rgba(41, 128, 185, 0.1)",
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+            },
+            {
+              label: "Predicted Trend",
+              data: new Array(years.length)
+                .fill(null)
+                .concat(uttarakhandHealthData.Almora.predictedTrend),
+              borderColor: "rgba(41, 128, 185, 0.5)",
+              borderDash: [5, 5],
+              borderWidth: 2,
+              tension: 0.4,
+              pointRadius: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Disease Trend and Prediction",
+            },
+            tooltip: {
+              mode: "index",
+              intersect: false,
+            },
+            zoom: {
+              zoom: {
+                wheel: {
+                  enabled: true,
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: "x",
+              },
+              pan: {
+                enabled: true,
+                mode: "x",
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 50,
+              max: 220,
+              title: {
+                display: true,
+                text: "Cases per 1000 population",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Year",
+              },
+              ticks: {
+                autoSkip: false,
+                maxRotation: 50,
+                minRotation: 30,
+              },
+            },
+          },
+        },
+      });
+
+      // Update functions
+      function updateSikkimPrediction(district) {
+        const data = sikkimHealthData[district];
+        sikkimChart.data.datasets[0].data = data.diseaseTrend.concat(
+          data.predictedTrend
+        );
+        sikkimChart.data.datasets[1].data = new Array(years.length)
+          .fill(null)
+          .concat(data.predictedTrend);
+        sikkimChart.update();
+
+        document.getElementById("sikkimDistrictName").textContent = district;
+        document.getElementById("sikkimKiosks").textContent = data.kiosks;
+        document.getElementById("sikkimDoctors").textContent = data.doctors;
+        document.getElementById("sikkimInfantMortality").textContent =
+          data.infantMortality;
+        document.getElementById("sikkimLifeExpectancy").textContent =
+          data.lifeExpectancy;
+      }
+
+      function updateUttarakhandPrediction(district) {
+        const data = uttarakhandHealthData[district];
+        uttarakhandChart.data.datasets[0].data = data.diseaseTrend.concat(
+          data.predictedTrend
+        );
+        uttarakhandChart.data.datasets[1].data = new Array(years.length)
+          .fill(null)
+          .concat(data.predictedTrend);
+        uttarakhandChart.update();
+
+        document.getElementById("uttarakhandDistrictName").textContent =
+          district;
+        document.getElementById("uttarakhandKiosks").textContent = data.kiosks;
+        document.getElementById("uttarakhandDoctors").textContent =
+          data.doctors;
+        document.getElementById("uttarakhandInfantMortality").textContent =
+          data.infantMortality;
+        document.getElementById("uttarakhandLifeExpectancy").textContent =
+          data.lifeExpectancy;
+      }
+
+      // Event listeners
+      document
+        .getElementById("sikkimDistrict")
+        .addEventListener("change", function () {
+          updateSikkimPrediction(this.value);
+        });
+
+      document
+        .getElementById("uttarakhandDistrict")
+        .addEventListener("change", function () {
+          updateUttarakhandPrediction(this.value);
+        });
+
+      // Initialize with default values
+      updateSikkimPrediction("Gangtok");
+      updateUttarakhandPrediction("Almora");
+    </script>
+  </body>
+</html>

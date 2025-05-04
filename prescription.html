@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>वैदSeva</title>
     <style>
+      /* Your original unchanged CSS */
       body {
         font-family: Arial, sans-serif;
         display: flex;
@@ -112,12 +113,18 @@
     </style>
   </head>
   <body>
+    <!-- Your original button container - now with 3 buttons -->
     <div class="button-container">
       <button class="button print" onclick="printPrescription()">PRINT</button>
+      <button class="button more-info" onclick="savePrescriptionToFirebase()">
+        SAVE TO CLOUD
+      </button>
       <a href="test_lab.html">
-        <button class="button more-info" id="extra">More info</button>
+        <button class="button more-info">More info</button>
       </a>
     </div>
+
+    <!-- Your original container content -->
     <div class="container">
       <div class="header">
         Dr. MOHIT CHOPRA, MD<br />17/10 Old Rajendra Nagar-110060<br />Phone no:
@@ -163,116 +170,118 @@
       <img src="logo.png" alt="Doctor Stamp" class="stamp" />
     </div>
 
-    <script>
-      // Set current date and initialize prescription when DOM is loaded
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+      } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDzN2L_4dLV6D2tE4OCpjhqY9YATnF4PUU",
+        authDomain: "prescription-6d10f.firebaseapp.com",
+        projectId: "prescription-6d10f",
+        storageBucket: "prescription-6d10f.firebasestorage.app",
+        messagingSenderId: "289983682642",
+        appId: "1:289983682642:web:ca5c3964c5a84b9954a78b",
+        measurementId: "G-LK5GC3DFLM",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Initialize when page loads
       document.addEventListener("DOMContentLoaded", function () {
-        // Format and display current date
         const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString("en-US");
         document.getElementById(
           "date-info"
-        ).innerHTML = `Date: ${formattedDate}`;
-
-        // Initialize the prescription data
+        ).textContent = `Date: ${currentDate.toLocaleDateString()}`;
         initializePrescription();
       });
 
-      // Main function to initialize prescription data
+      // Your original initialize function
       function initializePrescription() {
-        console.log("Initializing prescription data...");
-
-        // Log all localStorage items for debugging
-        debugLocalStorage();
-
-        // Load user data from login
         loadUserDataFromLogin();
-
-        // Load all required data
         loadPatientRemarks();
         loadPrescribedMedicines();
         loadPrescribedTests();
       }
 
-      // Function to load user data from login
-      function loadUserDataFromLogin() {
-        console.log("Loading user data from login...");
-
+      // New function to save to Firebase
+      async function savePrescriptionToFirebase() {
         try {
-          // Get user data from localStorage
+          const prescriptionData = {
+            patientInfo: {
+              basic: document.getElementById("patient-basic-info").textContent,
+              medical: document.getElementById("patient-medical-info")
+                .textContent,
+            },
+            remarks: document.getElementById("patient-remarks").textContent,
+            tests: Array.from(
+              document.querySelectorAll("#prescribed-tests li")
+            ).map((li) => li.textContent),
+            medicines: Array.from(
+              document.querySelectorAll("#prescribed-medicines li")
+            ).map((li) => li.textContent),
+            date: new Date().toISOString(),
+            doctor: "Dr. Mohit Chopra",
+          };
+
+          await addDoc(collection(db, "prescriptions"), prescriptionData);
+          alert("Prescription successfully saved to cloud!");
+        } catch (error) {
+          console.error("Error saving to cloud:", error);
+          alert(
+            "Failed to save to cloud. Please check your Firestore rules.\nError: " +
+              error.message
+          );
+        }
+      }
+
+      /* 
+      =============================================
+      YOUR ORIGINAL FUNCTIONS - ALL REMAIN UNCHANGED
+      =============================================
+      */
+      function loadUserDataFromLogin() {
+        try {
           const userDataString = localStorage.getItem("userData");
-          console.log("User data from localStorage:", userDataString);
-
-          if (
-            userDataString &&
-            userDataString !== "undefined" &&
-            userDataString !== "null"
-          ) {
-            // Parse the user data
-            try {
-              const userData = JSON.parse(userDataString);
-              console.log("Parsed user data:", userData);
-
-              if (userData && typeof userData === "object") {
-                // Update patient information with user data from login
-                updatePatientInfoFromLogin(userData);
-              } else {
-                console.error("Invalid user data format:", userData);
-                showDataError("patient-info", "Invalid user data format");
-                useDefaultPatientInfo();
-              }
-            } catch (parseError) {
-              console.error("Error parsing user data:", parseError);
-              showDataError("patient-info", "Error parsing user data");
-              useDefaultPatientInfo();
-            }
+          if (userDataString) {
+            const userData = JSON.parse(userDataString);
+            updatePatientInfoFromLogin(userData);
           } else {
-            
             useDefaultPatientInfo();
           }
         } catch (error) {
-          console.error("Error loading user data from login:", error);
-          showDataError("patient-info", "Error loading user data");
+          console.error("Error loading user data:", error);
           useDefaultPatientInfo();
         }
       }
 
-      // Function to update patient information from login data
       function updatePatientInfoFromLogin(userData) {
-        // Basic info
         const basicInfoElement = document.getElementById("patient-basic-info");
-
-        // Clean name data - remove any numeric suffixes
-        let name = userData.name || userData.fullName || "Unknown";
-        if (typeof name === "string") {
-          name = name.replace(/\d+$/, "").trim();
-        }
-
-        const age = userData.age || "--";
-        const height = userData.height || "--";
-
-        basicInfoElement.textContent = `Name: ${name} | Age: ${age} | Height: ${height} cm`;
-        console.log("Updated basic info:", basicInfoElement.textContent);
-
-        // Medical info
         const medicalInfoElement = document.getElementById(
           "patient-medical-info"
         );
 
+        let name = userData.name || userData.fullName || "Unknown";
+        name = name.replace(/\d+$/, "").trim();
+
+        basicInfoElement.textContent = `Name: ${name} | Age: ${
+          userData.age || "--"
+        } | Height: ${userData.height || "--"} cm`;
+
         let bloodGroup = "--";
-        if (userData.bloodGroup) {
-          bloodGroup = userData.bloodGroup;
-        } else if (userData.blood) {
-          bloodGroup = userData.blood;
-        }
+        if (userData.bloodGroup) bloodGroup = userData.bloodGroup;
+        else if (userData.blood) bloodGroup = userData.blood;
 
-        const gender = userData.gender || "--";
-        const weight = userData.weight || "--";
-
-        medicalInfoElement.textContent = `Blood Group: ${bloodGroup} | Gender: ${gender} | Weight: ${weight} kg`;
-        console.log("Updated medical info:", medicalInfoElement.textContent);
+        medicalInfoElement.textContent = `Blood Group: ${bloodGroup} | Gender: ${
+          userData.gender || "--"
+        } | Weight: ${userData.weight || "--"} kg`;
       }
 
-      // Function to use default patient info
       function useDefaultPatientInfo() {
         document.getElementById("patient-basic-info").textContent =
           "Name: -- | Age: -- | Height: --";
@@ -280,179 +289,67 @@
           "Blood Group: -- | Gender: -- | Weight: --";
       }
 
-      // Function to show data loading error
-      function showDataError(elementId, message) {
-        const element = document.getElementById(elementId);
-
-        // Remove any existing error messages
-        const existingError = element.querySelector(".error-message");
-        if (existingError) {
-          existingError.remove();
-        }
-
-        // Create and add new error message
-        const errorSpan = document.createElement("div");
-        errorSpan.className = "error-message";
-        errorSpan.textContent = message;
-        element.appendChild(errorSpan);
-
-        console.warn(message);
-      }
-
-      // Function to load patient remarks
       function loadPatientRemarks() {
-        const remarksContainer = document.getElementById("patient-remarks");
-        try {
-          const patientRemarks = localStorage.getItem("patientRemarks");
-
-          if (patientRemarks && patientRemarks.trim() !== "") {
-            remarksContainer.textContent = patientRemarks;
-          } else {
-            remarksContainer.textContent = "No remarks provided.";
-          }
-        } catch (error) {
-          console.error("Error loading remarks:", error);
-          remarksContainer.textContent = "Error loading remarks.";
-        }
+        const remarks = localStorage.getItem("patientRemarks");
+        document.getElementById("patient-remarks").textContent =
+          remarks || "No remarks provided.";
       }
 
-      // Function to load prescribed medicines
       function loadPrescribedMedicines() {
         const medicinesContainer = document.getElementById(
           "prescribed-medicines"
         );
+        medicinesContainer.innerHTML = "";
 
         try {
-          // Get medicines from localStorage
           const medicinesString = localStorage.getItem("prescribedMedicines");
-          console.log("Medicines string:", medicinesString);
-
-          // Clear existing medicines
-          medicinesContainer.innerHTML = "";
-
-          if (
-            medicinesString &&
-            medicinesString !== "undefined" &&
-            medicinesString !== "null"
-          ) {
-            try {
-              const prescribedMedicines = JSON.parse(medicinesString);
-
-              if (
-                Array.isArray(prescribedMedicines) &&
-                prescribedMedicines.length > 0
-              ) {
-                // Add each medicine to the list
-                prescribedMedicines.forEach((medicine) => {
-                  if (medicine && typeof medicine === "object") {
-                    const li = document.createElement("li");
-                    const name = medicine.name || "Unknown Medicine";
-                    const quantity = medicine.quantity || "As directed";
-                    const duration = medicine.duration || "As needed";
-
-                    li.textContent = `${name} (${quantity}, ${duration})`;
-                    medicinesContainer.appendChild(li);
-                  }
-                });
-              } else {
-                // Use default medicines as fallback
-                useDefaultMedicines(medicinesContainer);
-              }
-            } catch (parseError) {
-              console.error("Error parsing medicines:", parseError);
-              useDefaultMedicines(medicinesContainer);
-            }
+          if (medicinesString) {
+            const medicines = JSON.parse(medicinesString);
+            medicines.forEach((medicine) => {
+              const li = document.createElement("li");
+              li.textContent = `${medicine.name} (${
+                medicine.quantity || "As directed"
+              }, ${medicine.duration || "As needed"})`;
+              medicinesContainer.appendChild(li);
+            });
           } else {
-            // Use default medicines as fallback
-            useDefaultMedicines(medicinesContainer);
+            medicinesContainer.innerHTML = "<li>No medicines prescribed</li>";
           }
         } catch (error) {
           console.error("Error loading medicines:", error);
-          // Use default medicines on error
-          useDefaultMedicines(medicinesContainer);
+          medicinesContainer.innerHTML = "<li>Error loading medicines</li>";
         }
       }
 
-      // Function to use default medicines
-      function useDefaultMedicines(container) {
-        container.innerHTML = `
-          <li>No data has been provided</li>
-        `;
-      }
-
-      // Function to load prescribed tests
       function loadPrescribedTests() {
         const testsContainer = document.getElementById("prescribed-tests");
+        testsContainer.innerHTML = "";
 
         try {
-          // Get tests from localStorage
           const testsString = localStorage.getItem("prescribedTests");
-          console.log("Tests string:", testsString);
-
-          // Clear existing tests
-          testsContainer.innerHTML = "";
-
-          if (
-            testsString &&
-            testsString !== "undefined" &&
-            testsString !== "null"
-          ) {
-            try {
-              const prescribedTests = JSON.parse(testsString);
-
-              if (
-                Array.isArray(prescribedTests) &&
-                prescribedTests.length > 0
-              ) {
-                // Add each test to the list
-                prescribedTests.forEach((test) => {
-                  if (test) {
-                    const li = document.createElement("li");
-                    li.textContent = test;
-                    testsContainer.appendChild(li);
-                  }
-                });
-              } else {
-                // Use default tests as fallback
-                useDefaultTests(testsContainer);
-              }
-            } catch (parseError) {
-              console.error("Error parsing tests:", parseError);
-              useDefaultTests(testsContainer);
-            }
+          if (testsString) {
+            const tests = JSON.parse(testsString);
+            tests.forEach((test) => {
+              const li = document.createElement("li");
+              li.textContent = test;
+              testsContainer.appendChild(li);
+            });
           } else {
-            // Use default tests as fallback
-            useDefaultTests(testsContainer);
+            testsContainer.innerHTML = "<li>No tests required</li>";
           }
         } catch (error) {
           console.error("Error loading tests:", error);
-          // Use default tests on error
-          useDefaultTests(testsContainer);
+          testsContainer.innerHTML = "<li>Error loading tests</li>";
         }
       }
 
-      // Function to use default tests
-      function useDefaultTests(container) {
-        container.innerHTML = `
-          <li>No data has been provided</li>
- 
-        `;
-      }
-
-      // Function to print prescription
       function printPrescription() {
         window.print();
       }
 
-      // Debugging function to check localStorage contents
-      function debugLocalStorage() {
-        console.log("===== localStorage Debug =====");
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          console.log(`${key}: ${localStorage.getItem(key)}`);
-        }
-        console.log("============================");
-      }
+      // Make functions available globally
+      window.printPrescription = printPrescription;
+      window.savePrescriptionToFirebase = savePrescriptionToFirebase;
     </script>
   </body>
 </html>

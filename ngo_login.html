@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>वैदSeva - NGO Portal</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #81c784;
+        --accent-color: #2e7d32;
+        --bg-color: #f8f9fa;
+        --text-color: #333;
+        --light-text: #6c757d;
+        --white: #ffffff;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --nav-bg: #e8f5e9;
+      }
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s ease;
+      }
+      nav {
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 1rem 2rem;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .nav-title {
+        position: relative;
+        display: inline-block;
+        transition: transform 0.3s ease;
+        font-size: 24px;
+      }
+      .nav-title:hover {
+        transform: scale(1.05);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .login-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: var(--white);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        transform: translateY(0);
+        transition: all 0.3s ease;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+      }
+      .login-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(46, 125, 50, 0.15);
+      }
+      .login-title {
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        position: relative;
+      }
+      .login-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background-color: var(--primary-color);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+      .login-container:hover .login-title::after {
+        width: 50%;
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+        color: var(--text-color);
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        outline: none;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+      .form-group input::placeholder,
+      .form-group select::placeholder {
+        color: #94a3b8;
+        opacity: 0.7;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      }
+      .form-group input:valid,
+      .form-group select:valid {
+        border-color: var(--secondary-color);
+      }
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.125rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+      }
+      .btn:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+      .btn:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      .signup-link {
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--light-text);
+      }
+      .signup-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .signup-link a:hover {
+        text-decoration: underline;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-5px);
+        }
+        40%,
+        80% {
+          transform: translateX(5px);
+        }
+      }
+      .shake {
+        animation: shake 0.5s ease;
+      }
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--light-text);
+        background: none;
+        border: none;
+        padding: 5px;
+      }
+
+      /* Autocomplete styles */
+      .autocomplete-container {
+        position: relative;
+      }
+
+      .autocomplete-list {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: var(--white);
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        z-index: 10;
+        box-shadow: var(--shadow);
+        display: none;
+      }
+
+      .autocomplete-list.show {
+        display: block;
+      }
+
+      .autocomplete-item {
+        padding: 0.75rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .autocomplete-item:hover {
+        background-color: #f0f9f0;
+      }
+
+      .autocomplete-item.active {
+        background-color: #e8f5e9;
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .login-container {
+          margin: 1rem;
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <h1 class="nav-title">वैदSeva - NGO Portal</h1>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="login-container">
+        <h2 class="login-title">NGO Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="ngoName">NGO Name</label>
+            <div class="autocomplete-container">
+              <input
+                type="text"
+                id="ngoName"
+                placeholder="Enter NGO Name"
+                required
+                autocomplete="off"
+              />
+              <div id="autocompleteList" class="autocomplete-list"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter Username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div style="position: relative; display: flex; align-items: center">
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter Password"
+                required
+                style="padding-right: 40px"
+              />
+              <button
+                type="button"
+                onclick="togglePassword()"
+                class="password-toggle"
+              >
+                👁️
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <select id="state" required>
+              <option value="" disabled selected>Select State</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+              <option value="Andaman and Nicobar Islands">
+                Andaman and Nicobar Islands
+              </option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Dadra and Nagar Haveli and Daman and Diu">
+                Dadra and Nagar Haveli and Daman and Diu
+              </option>
+              <option value="Delhi">Delhi</option>
+              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+              <option value="Ladakh">Ladakh</option>
+              <option value="Lakshadweep">Lakshadweep</option>
+              <option value="Puducherry">Puducherry</option>
+            </select>
+          </div>
+          <button type="submit" class="btn" id="loginBtn">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // NGO names list from provided text file
+      const ngoNames = [
+        "KALPATARU PRATISTHAN",
+        "ABHIPRERNA FOUNDATION",
+        "Mangal Deep Vidya Mandir",
+        "Raphael Ryder Cheshire International Centre",
+        "Srajan Spastic Society",
+        "Latika Roy Memorial Foundation Society",
+        "ROSNI SOCIETY",
+        "ANMOL FOUNDATION",
+        "Voluntary Health Association of Sikkim (VHAS)",
+        "Sikkim AIDS Control Society (SACS)",
+        "Rinchenpong Rural Health and Welfare Society",
+        "Matri Kalyan Samiti",
+        "Association for Social Health in India (Sikkim Chapter)",
+        "Hope Social Welfare Ministries",
+        "Kapinzal Social Foundation",
+        "Drishti",
+        "Sikkim Divyang Sahayata Samiti",
+        "Sivik Samdup Maney Lhakhang Managing Committee",
+        "Thubten Gatsal Ling Sumin Gumpa Managing Committee",
+        "Sikkim Mahila Kalyan Sangh",
+        "Samridhi Samaj",
+        "Taraloka Foundation",
+        "Anugyalaya Darjeeling Diocese Social Service Society",
+        "The Hans Foundation",
+        "Aarohi",
+        "GVNML (Gramin Vikas Navyuvak Mandal Laporiya) – Uttarakhand Unit",
+        "Chirag (Central Himalayan Rural Action Group)",
+        "Shree Bhuvneshwari Mahila Ashram (SBMA)",
+        "Himalayan Institute Hospital Trust (HIHT)",
+        "Himalaya Seva Sangh",
+        "Pan Himalayan Grassroots Development Foundation",
+        "Uttarakhand Seva Nidhi",
+        "Navdanya",
+        "Rural Health and Environment Development Trust (RHEDT)",
+        "People's Science Institute (PSI)",
+        "Swami Rama Himalayan University – Outreach Programs",
+        "Doon Hospital Charitable Trust",
+        "Aasra Trust",
+      ];
+
+      const ngoNameInput = document.getElementById("ngoName");
+      const autocompleteList = document.getElementById("autocompleteList");
+      let currentFocus = -1;
+
+      // Function to toggle password visibility
+      function togglePassword() {
+        let input = document.getElementById("password");
+        if (input.type === "password") {
+          input.type = "text";
+        } else {
+          input.type = "password";
+        }
+      }
+
+      // Function to show autocomplete suggestions
+      function showSuggestions(input, suggestions) {
+        // Clear previous suggestions
+        autocompleteList.innerHTML = "";
+
+        if (suggestions.length === 0) {
+          autocompleteList.classList.remove("show");
+          return;
+        }
+
+        // Create suggestion items
+        suggestions.forEach((suggestion) => {
+          const item = document.createElement("div");
+          item.className = "autocomplete-item";
+          item.innerHTML = suggestion;
+
+          // Add click event to select the suggestion
+          item.addEventListener("click", function () {
+            ngoNameInput.value = suggestion;
+            autocompleteList.classList.remove("show");
+          });
+
+          autocompleteList.appendChild(item);
+        });
+
+        autocompleteList.classList.add("show");
+      }
+
+      // Function to filter NGO names based on input
+      function filterNGOs(input) {
+        input = input.toLowerCase();
+        return ngoNames.filter((name) => name.toLowerCase().includes(input));
+      }
+
+      // Event listeners for input field
+      ngoNameInput.addEventListener("input", function () {
+        const inputValue = this.value;
+        if (!inputValue) {
+          autocompleteList.classList.remove("show");
+          return;
+        }
+
+        const filteredNGOs = filterNGOs(inputValue);
+        showSuggestions(inputValue, filteredNGOs);
+        currentFocus = -1;
+      });
+
+      // Close the autocomplete list when clicking elsewhere
+      document.addEventListener("click", function (e) {
+        if (
+          e.target !== ngoNameInput &&
+          e.target.className !== "autocomplete-item"
+        ) {
+          autocompleteList.classList.remove("show");
+        }
+      });
+
+      // Handle keyboard navigation
+      ngoNameInput.addEventListener("keydown", function (e) {
+        if (!autocompleteList.classList.contains("show")) return;
+
+        const items =
+          autocompleteList.getElementsByClassName("autocomplete-item");
+
+        if (e.key === "ArrowDown") {
+          currentFocus++;
+          addActive(items);
+          e.preventDefault();
+        } else if (e.key === "ArrowUp") {
+          currentFocus--;
+          addActive(items);
+          e.preventDefault();
+        } else if (e.key === "Enter" && currentFocus > -1) {
+          if (items[currentFocus]) {
+            items[currentFocus].click();
+            e.preventDefault();
+          }
+        }
+      });
+
+      // Add active class to current selection
+      function addActive(items) {
+        if (!items) return;
+
+        // Remove active class from all items
+        for (let i = 0; i < items.length; i++) {
+          items[i].classList.remove("active");
+        }
+
+        // Adjust focus if out of bounds
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+
+        // Add active class to current focus
+        if (items[currentFocus]) {
+          items[currentFocus].classList.add("active");
+          // Ensure the item is visible in the scrollable list
+          items[currentFocus].scrollIntoView({ block: "nearest" });
+        }
+      }
+
+      // Form submission
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const ngoName = document.getElementById("ngoName").value.trim();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value;
+          const state = document.getElementById("state").value;
+          const loginBtn = document.getElementById("loginBtn");
+
+          // Change button text to show loading
+          loginBtn.textContent = "Logging in...";
+          loginBtn.disabled = true;
+
+          try {
+            // In a real implementation, you would authenticate with a server
+            console.log("NGO Login Attempt:", {
+              ngoName,
+              username,
+              state,
+            });
+
+            // Simulate a network request
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // Simulate successful login
+            // Store user data for use across the application
+            localStorage.setItem(
+              "ngoData",
+              JSON.stringify({
+                ngoName,
+                username,
+                state,
+                loggedIn: true,
+              })
+            );
+
+            // Store state separately for easy access
+            localStorage.setItem("selectedState", state);
+
+            // Redirect to dashboard
+            window.location.href = "ngo_dashboard.html";
+          } catch (error) {
+            console.error("Login error:", error);
+            loginBtn.textContent = "Login";
+            loginBtn.disabled = false;
+
+            alert("Login failed. Please check your credentials.");
+
+            // Add shake animation to the form
+            document.querySelector(".login-container").classList.add("shake");
+            setTimeout(() => {
+              document
+                .querySelector(".login-container")
+                .classList.remove("shake");
+            }, 500);
+          }
+        });
+    </script>
+  </body>
+</html>

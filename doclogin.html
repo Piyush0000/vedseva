@@ -208,11 +208,10 @@
         <h2 class="login-title">Doctor's Login Portal</h2>
         <form id="loginForm">
           <div class="form-group">
-            <label for="aadhar">Username</label>
+            <label for="username">Username</label>
             <input
               type="text"
-              id="aadhar"
-              pattern="[0-9]{12}"
+              id="username"
               maxlength="12"
               placeholder="Enter Login Id"
               required
@@ -220,7 +219,7 @@
           </div>
           <div class="form-group">
             <label for="phone">Password</label>
-            <div style="position: relative; display: flex; align-items: center;">
+            <div style="position: relative; display: flex; align-items: center">
               <input
                 type="password"
                 id="phone"
@@ -228,12 +227,18 @@
                 maxlength="10"
                 placeholder="Enter Password"
                 required
-                style="padding-right: 30px;"
+                style="padding-right: 30px"
               />
               <button
                 type="button"
                 onclick="togglePassword()"
-                style="position: absolute; right: 5px; background: none; border: none; cursor: pointer;"
+                style="
+                  position: absolute;
+                  right: 5px;
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                "
               >
                 👁️
               </button>
@@ -241,7 +246,6 @@
           </div>
           <button type="submit" class="btn">Login</button>
         </form>
-
       </div>
     </div>
 
@@ -257,7 +261,6 @@
     </script>
 
     <script type="module">
-   
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
       import {
         getAuth,
@@ -271,7 +274,6 @@
         getDocs,
       } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
 
-  
       const firebaseConfig = {
         apiKey: "AIzaSyD-18K-6BnKOxc1CDhkQAv5dWIEwOFT-go",
         authDomain: "vedseva-5e40f.firebaseapp.com",
@@ -281,12 +283,10 @@
         appId: "1:28374532477:web:c5076c500cebaa4b630c14",
       };
 
-     
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
-   
       const displayUserData = (userData) => {
         const userInfo = document.getElementById("userInfo");
         userInfo.innerHTML = `
@@ -300,45 +300,41 @@
         document.getElementById("userDetails").style.display = "block";
       };
 
- 
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          const aadhar = document.getElementById("aadhar").value.trim();
-          const password = document.getElementById("password").value;
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("phone").value;
 
           try {
-           
             const usersRef = collection(db, "users");
-            const q = query(usersRef, where("aadhar", "==", aadhar));
+            const q = query(usersRef, where("username", "==", username));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-              alert("No user found with this Aadhar number");
+              alert("No user found with this username");
               return;
             }
 
             const userData = querySnapshot.docs[0].data();
 
-           
             await signInWithEmailAndPassword(
               auth,
-              `${aadhar}@vedseva.com`,
+              `${username}@vedseva.com`,
               password
             );
 
-         
             displayUserData(userData);
             alert("✅ Login successful!");
           } catch (error) {
             console.error("Login error:", error);
 
             if (error.code === "auth/invalid-email") {
-              alert("Invalid Aadhar format");
+              alert("Invalid username format");
             } else if (error.code === "auth/user-not-found") {
-              alert("No account found with this Aadhar number");
+              alert("No account found with this username");
             } else if (error.code === "auth/wrong-password") {
               alert("Incorrect password");
             } else {
@@ -346,12 +342,6 @@
             }
           }
         });
-
-   
-      const aadharInput = document.getElementById("aadhar");
-      aadharInput.addEventListener("input", (e) => {
-        e.target.value = e.target.value.replace(/\D/g, ""); 
-      });
 
       document
         .getElementById("loginForm")
